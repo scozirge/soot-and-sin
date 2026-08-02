@@ -5,4 +5,4 @@
 - `soot-and-sin-adventure-demo/`：完整冒險 Demo
 - `soot-and-sin-event-prototypes/`：獨立事件原型
 
-網站入口為根目錄的 `index.html`。
+公開入口：https://scozirge.github.io/soot-and-sin/
