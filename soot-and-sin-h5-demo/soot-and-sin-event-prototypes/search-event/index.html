@@ -1,0 +1,294 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0b0e0c">
+  <title>煤灰與惡 (SOOT and SIN) — 搜刮事件 Demo</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <svg class="icon-library" aria-hidden="true">
+    <symbol id="icon-can" viewBox="0 0 64 64">
+      <ellipse cx="32" cy="13" rx="17" ry="6"/><path d="M15 13v37c0 4 8 7 17 7s17-3 17-7V13"/><path d="M15 24c8 4 26 4 34 0M15 46c8-4 26-4 34 0"/>
+    </symbol>
+    <symbol id="icon-bandage" viewBox="0 0 64 64">
+      <path d="M12 39 39 12c5-5 18 8 13 13L25 52c-5 5-18-8-13-13Z"/><path d="m24 28 12 12M27 25l12 12"/><circle cx="27" cy="34" r="1.5"/><circle cx="34" cy="27" r="1.5"/><circle cx="36" cy="36" r="1.5"/>
+    </symbol>
+    <symbol id="icon-oil" viewBox="0 0 64 64">
+      <path d="M25 8h14v10l7 9v25c0 4-4 6-14 6s-14-2-14-6V27l7-9V8Z"/><path d="M22 31h20M24 47h16"/><path d="M32 27c8 10 6 16 0 16s-8-6 0-16Z"/>
+    </symbol>
+    <symbol id="icon-ammo" viewBox="0 0 64 64">
+      <path d="M10 48h44v9H10z"/><path d="M16 48V24l6-13 6 13v24M36 48V20l6-12 6 12v28"/><path d="M16 28h12M36 24h12"/>
+    </symbol>
+    <symbol id="icon-alcohol" viewBox="0 0 64 64">
+      <path d="M25 7h14v12l7 8v27c0 3-3 5-6 5H24c-3 0-6-2-6-5V27l7-8V7Z"/><path d="M18 34h28M18 50h28"/><path d="M32 37v10M27 42h10"/>
+    </symbol>
+    <symbol id="icon-parts" viewBox="0 0 64 64">
+      <path d="M27 8h10l2 8 7 3 7-4 6 8-6 6v7l6 6-6 8-7-4-7 3-2 8H27l-2-8-7-3-7 4-6-8 6-6v-7l-6-6 6-8 7 4 7-3 2-8Z"/><circle cx="32" cy="32" r="10"/>
+    </symbol>
+    <symbol id="icon-syringe" viewBox="0 0 64 64">
+      <path d="m14 46 30-30 8 8-30 30Z"/><path d="m39 13 12 12M46 8l10 10M18 42l6 6M11 53l-4 4"/><path d="m28 32 5 5M34 26l5 5"/>
+    </symbol>
+    <symbol id="icon-watch" viewBox="0 0 64 64">
+      <path d="M32 14V8h8"/><circle cx="32" cy="37" r="20"/><circle cx="32" cy="37" r="15"/><path d="M32 37V25M32 37l9 6M37 12c12 2 17 10 16 20"/>
+    </symbol>
+    <symbol id="icon-tonic" viewBox="0 0 64 64">
+      <path d="M25 7h14v10l5 7v28c0 5-5 7-12 7s-12-2-12-7V24l5-7V7Z"/><path d="M20 29c8 5 16-5 24 0v19c-8-5-16 5-24 0Z"/><path d="m28 38 3 3 6-8"/>
+    </symbol>
+    <symbol id="icon-knife" viewBox="0 0 64 64">
+      <path d="M8 52 45 15c5-5 10-7 12-7-1 7-5 17-13 25L22 55Z"/><path d="m14 44 8 8M9 57l8-8"/>
+    </symbol>
+    <symbol id="icon-pistol" viewBox="0 0 64 64">
+      <path d="M7 21h40l9 8-9 7H28l-6 20H10l5-20H7Z"/><path d="M36 21v-7h13v7M28 36l-11 7"/>
+    </symbol>
+  </svg>
+
+  <main class="event-shell">
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">LOCAL EVENT PROTOTYPE · SCAVENGE</p>
+        <h1>煤灰與惡 <span>(SOOT and SIN)</span></h1>
+      </div>
+      <div class="event-mark">
+        <span>搜刮事件</span>
+        <strong id="eventNumber">01</strong>
+      </div>
+    </header>
+
+    <section class="event-layout">
+      <aside class="party-column" aria-label="探索隊伍">
+        <article id="playerCard" class="actor-card panel">
+          <div class="actor-heading">
+            <img class="portrait" src="assets/scozirge-portrait.webp" alt="scozirge">
+            <div>
+              <span class="actor-role">你</span>
+              <h2>scozirge</h2>
+            </div>
+          </div>
+          <div class="exploration-row">
+            <span>探索</span><strong>72</strong>
+          </div>
+          <div class="exploration-track"><i style="--value:72%"></i></div>
+          <p id="playerStatus" class="actor-status">等待選擇搜索區域</p>
+        </article>
+
+        <article id="allyCard" class="actor-card panel">
+          <div class="actor-heading">
+            <img class="portrait" src="assets/survivor.webp" alt="Morrow">
+            <div>
+              <span class="actor-role">隊友</span>
+              <h2>Morrow</h2>
+            </div>
+          </div>
+          <div class="exploration-row">
+            <span>探索</span><strong>46</strong>
+          </div>
+          <div class="exploration-track"><i style="--value:46%"></i></div>
+          <p id="allyStatus" class="actor-status">正在觀察房間</p>
+        </article>
+      </aside>
+
+      <section class="room-section">
+        <div class="room-heading">
+          <div>
+            <p class="eyebrow">事件地點</p>
+            <h2>封鎖藥房</h2>
+          </div>
+          <span id="phaseLabel" class="phase-label">等待投票</span>
+        </div>
+
+        <div id="roomBoard" class="room-board">
+          <img src="assets/stripped-apothecary.png" alt="幾乎被搜刮一空的荒廢藥房">
+
+          <div class="depth-mark">
+            <span>深入階段</span>
+            <strong id="depthNumber">0</strong>
+          </div>
+
+          <div id="rewardCache" class="reward-cache">
+            <span>累積物資</span>
+            <strong id="rewardCount">0</strong>
+            <small id="successCount">成功 0 次</small>
+          </div>
+
+          <div id="searchVeil" class="search-veil" aria-hidden="true">
+            <span class="scan-line"></span>
+          </div>
+
+          <div id="entrySequence" class="entry-sequence" hidden aria-hidden="true">
+            <span class="entry-ash ash-left"></span>
+            <span class="entry-ash ash-right"></span>
+            <div class="entry-location">
+              <span>ENTERING LOCATION</span>
+              <strong>封鎖藥房</strong>
+              <small>黑霧封鎖區 · 寂靜</small>
+            </div>
+          </div>
+
+          <div id="searchSequence" class="search-sequence" hidden aria-hidden="true">
+            <span class="lantern-beam"></span>
+            <div class="search-film-rig">
+              <div class="search-film-rail ambient-rail">
+                <div id="ambientTrack" class="search-film-track"></div>
+              </div>
+              <div class="search-film-rail focus-rail">
+                <div id="focusTrack" class="search-film-track"></div>
+              </div>
+              <div class="search-focus-frame">
+                <i class="registration-mark top-mark"></i>
+                <i class="registration-mark bottom-mark"></i>
+              </div>
+            </div>
+            <span class="search-fog fog-back"></span>
+            <span class="search-fog fog-front"></span>
+            <span class="film-scratches"></span>
+            <span class="projection-flicker"></span>
+            <span class="stop-flash"></span>
+          </div>
+
+          <div id="eventComplete" class="event-complete" hidden>
+            <p class="eyebrow">EVENT COMPLETE</p>
+            <h2 id="completeTitle">物資已帶離現場</h2>
+            <p id="completeSummary"></p>
+            <span>此處將銜接冒險的下一個事件</span>
+            <button id="replayButton" class="primary-button" type="button">再次測試搜刮事件</button>
+          </div>
+        </div>
+
+        <div class="search-command panel">
+          <div class="command-copy">
+            <p id="commandTitle">決定是否搜索這個房間</p>
+            <span id="commandDetail">兩人的探索合計為 118。</span>
+          </div>
+          <div class="chance-summary" aria-label="目前結果機率">
+            <div class="chance-track">
+              <i id="successChanceBar" class="chance-success"></i>
+              <i id="combatChanceBar" class="chance-combat"></i>
+            </div>
+            <div class="chance-labels">
+              <span>物資 <strong id="successChance">—</strong></span>
+              <span>戰鬥 <strong id="combatChance">—</strong></span>
+            </div>
+          </div>
+          <button id="voteButton" class="primary-button" type="button">進行投票</button>
+        </div>
+      </section>
+
+      <aside class="event-log panel">
+        <div class="log-heading">
+          <p class="eyebrow">搜索紀錄</p>
+          <span class="pulse-dot"></span>
+        </div>
+        <ol id="eventLog">
+          <li class="quiet">進入一間遭到封鎖的藥房。</li>
+        </ol>
+      </aside>
+    </section>
+  </main>
+
+  <div id="introModal" class="modal open" role="dialog" aria-modal="true" aria-labelledby="introTitle">
+    <div class="modal-card intro-card">
+      <p class="eyebrow">搜刮事件</p>
+      <h2 id="introTitle">貪婪需要共識</h2>
+      <p>每次深入前，隊伍都會投票是否繼續搜索。搜索必定找到物資或遭遇怪物；戰鬥會強制中止搜索。</p>
+      <div class="rule-strip">
+        <span>雙人投票</span><i>→</i><span>深入搜索</span><i>→</i><span>收手或戰鬥</span>
+      </div>
+      <button id="introButton" class="primary-button" type="button">進入藥房</button>
+    </div>
+  </div>
+
+  <div id="voteModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="voteTitle">
+    <div class="modal-card vote-card">
+      <div class="vote-heading">
+        <div>
+          <p class="eyebrow">隊伍投票 · 深入 <span id="voteDepth">1</span></p>
+          <h2 id="voteTitle">要繼續搜索嗎？</h2>
+        </div>
+        <div class="team-exploration"><span>隊伍探索</span><strong>118</strong></div>
+      </div>
+
+      <div class="vote-chances">
+        <div class="chance-track large">
+          <i id="voteSuccessBar" class="chance-success"></i>
+          <i id="voteCombatBar" class="chance-combat"></i>
+        </div>
+        <div class="chance-labels">
+          <span>物資 <strong id="voteSuccessChance">—</strong></span>
+          <span>遭遇戰鬥 <strong id="voteCombatChance">—</strong></span>
+        </div>
+      </div>
+
+      <p id="voteRiskText" class="vote-risk">越深入，成功率越低，遭遇怪物的機率越高。</p>
+
+      <div class="ballots">
+        <article id="playerBallot" class="ballot">
+          <img src="assets/scozirge-portrait.webp" alt="scozirge">
+          <span>scozirge</span>
+          <strong id="playerVote">等待選擇</strong>
+        </article>
+        <article id="allyBallot" class="ballot">
+          <img src="assets/survivor.webp" alt="Morrow">
+          <span>Morrow</span>
+          <strong id="allyVote">尚未投票</strong>
+        </article>
+      </div>
+
+      <div id="voteResult" class="vote-result" aria-live="polite"></div>
+      <div class="vote-actions">
+        <button class="vote-choice continue-choice" data-vote="continue" type="button">繼續搜索</button>
+        <button class="vote-choice stop-choice" data-vote="stop" type="button">就此收手</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="resultModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="resultTitle">
+    <div id="resultCard" class="modal-card result-card">
+      <p id="resultEyebrow" class="eyebrow">SEARCH RESULT</p>
+      <span id="resultIcon" class="result-icon">◆</span>
+      <h2 id="resultTitle">搜索成功</h2>
+      <p id="resultDescription">找到可用物資。</p>
+      <div id="foundItems" class="found-items"></div>
+      <div id="resultCountdown" class="result-countdown" aria-label="即將進入下一次投票"></div>
+      <button id="resultContinueButton" class="primary-button" type="button">查看下一次搜索風險</button>
+    </div>
+  </div>
+
+  <div id="battleModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="battleTitle">
+    <div class="modal-card battle-card">
+      <p class="eyebrow">NEXT EVENT · COMBAT</p>
+      <span class="battle-icon">!</span>
+      <h2 id="battleTitle">搜索驚動了怪物</h2>
+      <p>搜刮強制中止，下一個事件將切換為怪物戰鬥。</p>
+      <div class="pending-loot">
+        <span>戰鬥勝利後領取</span>
+        <strong id="pendingLoot">尚未找到物資</strong>
+      </div>
+      <button id="battleReplayButton" class="primary-button" type="button">再次測試搜刮事件</button>
+    </div>
+  </div>
+
+  <div id="lootModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="lootTitle">
+    <div class="modal-card loot-card">
+      <div class="loot-heading">
+        <div>
+          <p class="eyebrow">搜索結果</p>
+          <h2 id="lootTitle">分配找到的物資</h2>
+        </div>
+        <div class="loot-timer"><strong id="lootTimerText">15</strong><span>秒</span></div>
+      </div>
+      <div class="timer-track"><i id="lootTimerBar"></i></div>
+      <p class="loot-rule">可複選。無人選擇便放棄；兩人同時選擇時，各有一半機率取得。</p>
+      <div id="lootGrid" class="loot-grid"></div>
+      <div id="lootSummary" class="loot-summary" aria-live="polite"></div>
+      <div class="loot-actions">
+        <button id="lockButton" class="secondary-button" type="button" disabled>等待 Morrow 選擇</button>
+        <button id="continueButton" class="primary-button" type="button" hidden>繼續下一個事件</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="game.js"></script>
+</body>
+</html>

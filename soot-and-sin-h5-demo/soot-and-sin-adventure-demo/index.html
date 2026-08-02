@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#090c0a">
+  <title>煤灰與惡 — 冒險 Demo</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="hideout-trade.css">
+  <link rel="stylesheet" href="safe-zone.css">
+  <link rel="stylesheet" href="chapter-route.css">
+</head>
+<body>
+  <main class="rest-shell">
+    <header>
+      <p>SOOT AND SIN · SAFE ZONE EVENT</p>
+      <h1>煤灰與惡</h1>
+      <span>安全區</span>
+    </header>
+
+    <section class="rest-layout">
+      <article class="survivor-card panel">
+        <img src="battle/assets/scozirge-portrait.webp" alt="scozirge">
+        <div>
+          <small>倖存者</small>
+          <h2>scozirge</h2>
+          <div class="health-copy"><span>生命</span><strong id="healthText">72 / 72</strong></div>
+          <div class="health-track"><i id="healthBar"></i></div>
+          <div class="hideout-rest">
+            <button id="restButton" type="button">休息 · 恢復 10%</button>
+            <span id="restResult"></span>
+          </div>
+        </div>
+      </article>
+
+      <article class="route-card panel">
+        <small>安全區決議</small>
+        <h2 id="safeZoneTitle">等待隊伍投票</h2>
+        <p id="safeZoneDescription">隊伍將在休息與搜索之間做出選擇。</p>
+        <div class="safe-party">
+          <button id="tradeInviteButton" class="safe-avatar" type="button" disabled>
+            <img src="search/assets/survivor.webp" alt="Morrow"><span>點擊 Morrow<br>邀請一對一交易</span>
+          </button>
+          <div id="restControls" class="rest-controls" hidden>
+            <strong id="restCountdown">30</strong><span>秒</span>
+            <button id="playerEndRest" type="button" aria-pressed="false">我方結束休息</button>
+            <button id="allyEndRest" type="button" aria-pressed="false" disabled>Morrow 尚未結束</button>
+          </div>
+        </div>
+        <button id="startSearch" type="button" hidden>進行搜索</button>
+      </article>
+    </section>
+
+    <section class="inventory panel">
+      <div class="section-heading">
+        <div><small>安全區整備</small><h2>攜帶物資</h2></div>
+        <p id="lastResult"></p>
+      </div>
+      <div id="inventoryGrid" class="inventory-grid"></div>
+      <p class="phase-rule">只有安全區能休息並使用食物；醫療用品也能在此自由使用。武器與醫療用品會帶進戰鬥。</p>
+    </section>
+
+    <section id="tradeEvent" class="trade-event panel" aria-labelledby="tradeTitle" hidden>
+      <div class="section-heading trade-heading">
+        <div><small>安全區功能</small><h2 id="tradeTitle">與 Morrow 交換物資</h2></div>
+        <p>隊友背包內容僅本人可見</p>
+      </div>
+      <div class="trade-stage">
+        <article class="trade-backpack">
+          <div class="trade-actor">
+            <img src="battle/assets/scozirge-portrait.webp" alt="scozirge">
+            <div><small>你的背包</small><strong>scozirge</strong></div>
+            <span id="tradeCapacity">0 / 48</span>
+          </div>
+          <div class="trade-board-frame"><div id="tradePlayerBoard" class="trade-board" aria-label="交易中的個人背包"></div></div>
+        </article>
+
+        <article class="trade-shared">
+          <div class="trade-shared-title"><small>SHARED EXCHANGE</small><strong>共用交換窗</strong><span>無格數限制</span></div>
+          <div class="trade-ready-row">
+            <span id="tradePlayerReady"><i></i>scozirge</span>
+            <b>⇄</b>
+            <span id="tradeAllyReady"><i></i>Morrow</span>
+          </div>
+          <div id="tradeSharedList" class="trade-shared-list" aria-label="共用交換物資"></div>
+          <div class="trade-confirm-actions">
+            <button id="tradePlayerConfirm" type="button" aria-pressed="false">我方確認</button>
+            <button id="tradeAllyConfirm" type="button" aria-pressed="false" disabled>Morrow 確認中</button>
+            <button id="tradeCancel" class="trade-cancel" type="button">取消交易</button>
+          </div>
+          <p id="tradeStatus" class="trade-status" role="status">先清空共用窗，再由雙方確認</p>
+        </article>
+
+        <article id="tradeAllyReceiver" class="trade-private" aria-label="Morrow 的私人背包接收區">
+          <img src="search/assets/survivor.webp" alt="Morrow">
+          <small>隊友背包</small>
+          <strong>Morrow</strong>
+          <div class="trade-lock"><span>◆</span><b>內容隱藏</b><p>互為好友也無法查看私人背包</p></div>
+          <p class="trade-receive-hint">將共用物資拖到此處，模擬由 Morrow 收下</p>
+        </article>
+      </div>
+      <div class="trade-help"><span><b>拖曳</b>移動物資</span><span><b>R</b>拖曳時旋轉</span><span>共用窗變動會取消雙方確認</span></div>
+    </section>
+
+    <button id="resetAdventure" class="reset-button" type="button">重設冒險</button>
+  </main>
+  <div id="tradeTooltip" class="trade-tooltip" role="tooltip"></div>
+  <div id="tradeDragLayer" class="trade-drag-layer" aria-hidden="true"></div>
+  <div id="tradeComplete" class="trade-complete" hidden><div><small>TRADE COMPLETE</small><strong>交易完成</strong><span>物資已更新至你的背包</span><button id="tradeCompleteClose" type="button">返回安全區</button></div></div>
+  <div id="safeVoteModal" class="safe-modal" role="dialog" aria-modal="true" aria-labelledby="safeVoteTitle">
+    <div class="safe-modal-card">
+      <small>SAFE ZONE DECISION</small><h2 id="safeVoteTitle">要休息，還是搜索？</h2>
+      <p>票多者通過；平票將隨機決定。</p>
+      <div class="safe-vote-timer"><i id="safeVoteBar"></i><strong id="safeVoteTimer">5</strong></div>
+      <div class="safe-ballots">
+        <span>scozirge <b id="safePlayerVote">尚未投票</b></span>
+        <span>Morrow <b id="safeAllyVote">思考中</b></span>
+      </div>
+      <div class="safe-vote-actions"><button type="button" data-safe-vote="rest">休息</button><button type="button" data-safe-vote="search">搜索</button></div>
+    </div>
+  </div>
+  <div id="tradeRequestModal" class="safe-modal" hidden role="dialog" aria-modal="true" aria-labelledby="tradeRequestTitle">
+    <div class="safe-modal-card trade-request-card">
+      <img src="search/assets/survivor.webp" alt="Morrow"><small>TRADE REQUEST</small><h2 id="tradeRequestTitle">正在邀請 Morrow</h2><p id="tradeRequestStatus">等待對方回覆……</p>
+    </div>
+  </div>
+  <script src="adventure-state.js"></script>
+  <script src="chapter-route.js"></script>
+  <script src="app.js"></script>
+  <script src="hideout-trade.js"></script>
+  <script src="safe-zone.js"></script>
+</body>
+</html>

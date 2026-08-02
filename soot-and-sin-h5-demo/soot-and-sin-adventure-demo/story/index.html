@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#080b09">
+  <title>煤灰與惡 — 劇本事件</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="../chapter-route.css">
+</head>
+<body>
+  <main class="story-shell">
+    <header class="story-topbar">
+      <div><small>SOOT AND SIN · SCRIPT EVENT</small><h1>煤灰與惡</h1></div>
+      <span id="chapterProgress">第一節</span>
+    </header>
+
+    <section id="storyEvent" class="story-event">
+      <div id="storyScene" class="story-scene" aria-hidden="true"><i></i></div>
+      <article class="story-card">
+        <div class="story-meta"><span id="storyType">關鍵事件</span><small id="storyNode"></small></div>
+        <h2 id="storyTitle">苦痛祭司</h2>
+        <p id="storyText"></p>
+        <div id="storyFeedback" class="story-feedback" hidden></div>
+        <div id="storyChoices" class="story-choices"></div>
+        <button id="storyContinue" class="story-continue" type="button" hidden>前往下一節點</button>
+      </article>
+    </section>
+
+    <section class="story-party">
+      <article><img src="../battle/assets/scozirge-portrait.webp" alt="scozirge"><div><small>倖存者</small><strong>scozirge</strong></div><span id="playerVitals"></span></article>
+      <article><img src="../search/assets/survivor.webp" alt="Morrow"><div><small>同行者</small><strong>Morrow</strong></div><span>正在觀察你的選擇</span></article>
+    </section>
+  </main>
+  <script src="../adventure-state.js"></script>
+  <script src="../chapter-route.js"></script>
+  <script src="game.js"></script>
+</body>
+</html>

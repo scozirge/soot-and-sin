@@ -1,0 +1,48 @@
+:root { color-scheme: dark; --ink: #e5dcc8; --muted: #8d948b; --line: #454a40; --brass: #c89b47; --danger: #a84d44; }
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body { min-height: 100vh; margin: 0; color: var(--ink); background: #060907 url("../search/assets/victorian-street.webp") center/cover fixed; font-family: "Noto Serif TC", "Microsoft JhengHei", serif; }
+body::before { content: ""; position: fixed; inset: 0; pointer-events: none; background: linear-gradient(#050806d9, #050806f5), radial-gradient(circle at 50% 34%, transparent, #020302 76%); }
+.story-shell { position: relative; width: min(1460px, 100%); min-height: 100vh; margin: auto; padding: 28px 34px 52px; }
+.story-topbar { width: min(1380px, calc(100% - 32px)); margin: auto; display: flex; align-items: end; justify-content: space-between; padding-bottom: 16px; border-bottom: 1px solid #42463d; }
+.story-topbar small { color: var(--brass); font-size: .65rem; letter-spacing: .14em; }
+.story-topbar h1 { margin: 7px 0 0; font: 2.7rem Georgia, serif; }
+.story-topbar > span { color: #b5ab94; font: 1.1rem Georgia, serif; }
+.story-event { position: relative; width: min(1280px, calc(100% - 16px)); aspect-ratio: 757 / 462; min-height: 570px; margin: 24px auto 18px; overflow: hidden; border: 1px solid #514b3b; background: #030403; box-shadow: 0 24px 80px #000b; }
+.story-scene { position: absolute; inset: 0; background-color: #030403; background-image: var(--scene-image, url("../search/assets/abandoned-apothecary.png")); background-position: center; background-repeat: no-repeat; background-size: contain; filter: grayscale(.08) saturate(.9) brightness(.94) contrast(1.06); }
+.story-scene::after { content: ""; position: absolute; inset: 0; pointer-events: none; background: linear-gradient(0deg, #030604b8 0, transparent 52%), radial-gradient(ellipse at center, transparent 58%, #0203027a 100%); }
+.story-scene.switching { animation: sceneReveal .62s ease both; }
+.story-scene i { position: absolute; inset: -15%; opacity: .35; background: radial-gradient(ellipse, transparent 0 30%, #0507058c 72%), repeating-radial-gradient(ellipse at 20% 50%, #10161012 0 4%, transparent 5% 11%); animation: ashDrift 12s linear infinite; }
+.story-card { position: absolute; z-index: 1; right: 0; bottom: 0; left: 0; padding: 62px 36px 28px; background: linear-gradient(0deg, #050906fa 0 76%, #050906e8 86%, transparent 100%); }
+.story-meta { display: none; }
+.story-meta span { color: var(--brass); letter-spacing: .12em; }
+.story-card h2 { margin: 0 0 10px; font: 2.15rem Georgia, "Noto Serif TC", serif; }
+.story-card > p { margin: 0; color: #c7c0ae; font-size: .9rem; line-height: 1.75; white-space: pre-line; }
+.story-feedback { margin-top: 18px; padding: 11px 14px; border-left: 2px solid var(--danger); color: #c49183; background: #32181454; font-size: .72rem; line-height: 1.7; white-space: pre-line; }
+.story-choices { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin-top: 16px; }
+.story-choices button, .story-continue { width: 100%; min-height: 48px; padding: 10px 14px; border: 1px solid #555748; color: #d5cdb8; background: #101610e8; text-align: left; cursor: pointer; font: .75rem inherit; transition: .18s ease; }
+.story-choices button::before { content: attr(data-index); display: inline-grid; width: 24px; height: 24px; margin-right: 10px; place-items: center; border: 1px solid #5d5b4b; color: var(--brass); }
+.story-choices button:hover:not(:disabled), .story-continue:hover { border-color: var(--brass); background: #1b2018; transform: translateX(3px); }
+.story-choices button:disabled { opacity: .38; cursor: not-allowed; }
+.story-choices button small { display: block; margin: 3px 0 0 38px; color: #a56d61; }
+.story-continue { margin-top: 24px; border-color: #91733d; text-align: center; color: #e1c88e; }
+.story-party { width: min(1280px, calc(100% - 16px)); margin: auto; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.story-party article { display: flex; align-items: center; gap: 12px; padding: 11px 14px; border: 1px solid #3d443b; background: #080d0ade; }
+.story-party img { width: 44px; height: 52px; object-fit: cover; border: 1px solid #5f5c4f; }
+.story-party small, .story-party strong { display: block; }
+.story-party small { color: #9e8148; font-size: .55rem; }
+.story-party strong { margin-top: 3px; }
+.story-party span { margin-left: auto; color: var(--muted); font-size: .62rem; }
+@keyframes ashDrift { to { transform: translate3d(6%, -4%, 0) rotate(2deg); } }
+@keyframes sceneReveal { from { opacity: .2; transform: scale(1.035); filter: grayscale(.7) brightness(.25); } to { opacity: 1; transform: scale(1); } }
+@media (max-width: 780px) {
+  .story-shell { padding-inline: 4px; }
+  .story-event { aspect-ratio: auto; min-height: 560px; }
+  .story-scene { background-position: center top; background-size: 100% auto; }
+  .story-card { padding: 58px 24px 24px; }
+  .story-party { grid-template-columns: 1fr; }
+}
+@media (max-width: 560px) {
+  .story-event { min-height: 690px; }
+  .story-choices { grid-template-columns: 1fr; }
+}

@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>煤灰與惡｜黑霧幻燈演出</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="app-shell">
+    <header class="masthead">
+      <div>
+        <p class="eyebrow">SOOT AND SIN · SEARCH PROJECTION</p>
+        <h1>黑霧幻燈判定</h1>
+      </div>
+      <div class="serial">
+        <span>煤灰與惡</span>
+        <b>06</b>
+      </div>
+    </header>
+
+    <section class="control-panel">
+      <div class="control-group">
+        <span class="control-label">隊伍探索值</span>
+        <div class="explore-options" id="exploreOptions">
+          <button type="button" data-profile="low">
+            <small>探索 18</small><b>低</b>
+          </button>
+          <button type="button" class="active" data-profile="mid">
+            <small>探索 42</small><b>中</b>
+          </button>
+          <button type="button" data-profile="high">
+            <small>探索 75</small><b>高</b>
+          </button>
+        </div>
+      </div>
+
+      <div class="control-group result-control">
+        <label class="control-label" for="resultMode">測試停牌</label>
+        <select id="resultMode">
+          <option value="random">依膠卷隨機</option>
+          <option value="monster">怪物</option>
+          <option value="powerful">強大怪物</option>
+          <option value="apostle">使徒</option>
+          <option value="supplies">物資</option>
+          <option value="premium">精品</option>
+          <option value="artifact">神器</option>
+        </select>
+      </div>
+
+      <button class="play-button" id="playButton" type="button">
+        <span class="play-icon">◆</span>
+        <span><small>轉動膠卷</small><b>開始判定</b></span>
+      </button>
+    </section>
+
+    <section class="odds-panel">
+      <div>
+        <span class="control-label">本次膠卷構成</span>
+        <p id="profileSummary">探索越高，精品與神器的幻燈片越多。</p>
+      </div>
+      <div class="odds-strip" id="oddsStrip" aria-label="膠卷牌型比例"></div>
+    </section>
+
+    <section class="lantern-stage" id="stage">
+      <div class="room-darkness"></div>
+      <div class="projector-beam"></div>
+      <div class="projector-glow"></div>
+
+      <div class="film-rig" id="filmRig">
+        <div class="film-rail ambient-rail">
+          <div class="film-track" id="ambientTrack"></div>
+        </div>
+        <div class="film-rail focus-rail">
+          <div class="film-track" id="focusTrack"></div>
+        </div>
+
+        <div class="focus-frame" aria-hidden="true">
+          <i class="registration-mark top-mark"></i>
+          <i class="registration-mark bottom-mark"></i>
+          <span class="frame-corner corner-a"></span>
+          <span class="frame-corner corner-b"></span>
+          <span class="frame-corner corner-c"></span>
+          <span class="frame-corner corner-d"></span>
+        </div>
+      </div>
+
+      <div class="fog fog-back"></div>
+      <div class="fog fog-front"></div>
+      <div class="film-scratches"></div>
+      <div class="projection-flicker"></div>
+      <div class="stop-flash"></div>
+
+      <div class="phase-readout">
+        <span class="phase-dot"></span>
+        <p id="phaseText">等待幻燈機</p>
+      </div>
+
+      <div class="result-reveal" id="resultReveal" hidden>
+        <p id="resultTier">判定結果</p>
+        <h2 id="resultName">物資</h2>
+        <span id="resultNote">膠卷已鎖定</span>
+      </div>
+    </section>
+
+    <footer class="footer-note">
+      <span>中央觀景窗是唯一清晰焦點</span>
+      <span>高速轉動 0.5 秒 · 切斷動力 · 減速鎖定結果</span>
+    </footer>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>

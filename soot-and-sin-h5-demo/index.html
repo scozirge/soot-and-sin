@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#070a08">
+  <title>煤灰與惡｜公開 Demo</title>
+  <style>
+    :root { color-scheme: dark; --ink: #e7dfcc; --muted: #969b91; --line: #40483f; --gold: #c99b48; }
+    * { box-sizing: border-box; }
+    body { min-height: 100vh; margin: 0; color: var(--ink); background: radial-gradient(circle at 50% 0, #182019, #070a08 52%); font-family: "Microsoft JhengHei", serif; }
+    main { width: min(960px, calc(100% - 32px)); margin: auto; padding: 64px 0; }
+    small { color: var(--gold); letter-spacing: .16em; }
+    h1 { margin: 10px 0; font: clamp(2.4rem, 8vw, 4.8rem) Georgia, serif; }
+    header p { max-width: 650px; color: var(--muted); line-height: 1.8; }
+    section { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin-top: 36px; }
+    a { min-height: 120px; padding: 22px; border: 1px solid var(--line); color: inherit; background: #0c110de8; text-decoration: none; transition: .18s ease; }
+    a:hover, a:focus-visible { border-color: var(--gold); background: #151b15; transform: translateY(-2px); }
+    a strong, a span { display: block; }
+    a strong { margin-bottom: 10px; font: 1.25rem Georgia, serif; }
+    a span { color: var(--muted); font-size: .82rem; line-height: 1.6; }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <small>SOOT AND SIN · PUBLIC BUILDS</small>
+      <h1>煤灰與惡</h1>
+      <p>H5 遊戲原型公開測試入口。手機與電腦皆可直接開啟；目前以電腦及手機橫向畫面體驗最佳。</p>
+    </header>
+    <section>
+      <a href="./soot-and-sin-adventure-demo/"><strong>完整冒險 Demo</strong><span>劇情、戰鬥、搜索、安全區與物資系統。</span></a>
+      <a href="./soot-and-sin-adventure-demo/battle/"><strong>戰鬥事件</strong><span>時間軸、部位攻擊、暈眩與部位破壞。</span></a>
+      <a href="./soot-and-sin-adventure-demo/story/"><strong>劇情事件</strong><span>苦痛祭司劇本與章節節點。</span></a>
+      <a href="./soot-and-sin-adventure-demo/search/"><strong>安全區／搜索</strong><span>搜索風險、幻燈片與物資分配。</span></a>
+      <a href="./soot-and-sin-event-prototypes/inventory-loot/"><strong>背包搜刮原型</strong><span>格子背包、旋轉、堆疊與拆分。</span></a>
+      <a href="./soot-and-sin-event-prototypes/item-trade/"><strong>道具交易原型</strong><span>共用交換區與雙方確認。</span></a>
+      <a href="./soot-and-sin-event-prototypes/search-animation/"><strong>搜索演出原型</strong><span>詭譎幻燈片抽取演出。</span></a>
+      <a href="./soot-and-sin-event-prototypes/search-event/"><strong>搜索事件原型</strong><span>獨立的搜索與深入風險流程。</span></a>
+      <a href="./soot-and-sin-event-prototypes/battle-event/"><strong>舊版戰鬥原型</strong><span>早期戰鬥事件獨立版本。</span></a>
+    </section>
+  </main>
+</body>
+</html>

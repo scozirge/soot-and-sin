@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>煤灰與惡｜道具交換</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="trade-shell">
+    <header class="topbar">
+      <div class="brand">
+        <span class="brand-mark" aria-hidden="true">S&amp;S</span>
+        <div><p class="eyebrow">SOOT AND SIN</p><h1>道具交換</h1></div>
+      </div>
+      <div class="session-state"><i></i><span>藏匿處 · 私人交易</span><button id="resetButton" type="button">重置</button></div>
+    </header>
+
+    <section class="trade-layout">
+      <article class="inventory-panel player-panel">
+        <header class="actor-heading">
+          <img src="assets/scozirge-portrait.webp" alt="scozirge">
+          <div><p class="eyebrow">你的物資</p><h2>scozirge</h2></div>
+          <span class="capacity" id="playerCapacity">0 / 48</span>
+        </header>
+        <div class="board-frame"><div class="grid-board" id="playerBoard" data-board="player" aria-label="我的背包"></div></div>
+        <button class="confirm-button" id="playerConfirm" type="button" aria-pressed="false">
+          <span>我的決定</span><strong>確認交易</strong>
+        </button>
+      </article>
+
+      <section class="exchange-panel" aria-labelledby="exchangeTitle">
+        <header>
+          <p class="eyebrow">SHARED EXCHANGE</p>
+          <h2 id="exchangeTitle">共用交換窗</h2>
+          <span>無格數與容量限制</span>
+        </header>
+        <div class="exchange-status" aria-label="雙方確認狀態">
+          <div id="playerReadyState"><i></i><span>scozirge</span><strong>未確認</strong></div>
+          <b>⇄</b>
+          <div id="allyReadyState"><i></i><span>Morrow</span><strong>未確認</strong></div>
+        </div>
+        <div class="shared-list" id="sharedList" data-drop-zone="shared" aria-label="共用道具清單"></div>
+        <p class="exchange-rule">把物資放入共用窗後，任何一方都能取走。清單清空才能確認交易。</p>
+      </section>
+
+      <article class="inventory-panel ally-panel">
+        <header class="actor-heading">
+          <img src="assets/survivor.webp" alt="Morrow">
+          <div><p class="eyebrow">隊友物資</p><h2>Morrow</h2></div>
+          <span class="capacity" id="allyCapacity">0 / 48</span>
+        </header>
+        <div class="board-frame"><div class="grid-board" id="allyBoard" data-board="ally" aria-label="隊友背包"></div></div>
+        <button class="confirm-button" id="allyConfirm" type="button" aria-pressed="false">
+          <span>隊友決定</span><strong>確認交易</strong>
+        </button>
+      </article>
+    </section>
+
+    <footer class="command-bar">
+      <div><kbd>拖曳</kbd><span>移動物資</span></div>
+      <div><kbd>R</kbd><span>拖曳時旋轉</span></div>
+      <p id="statusText" role="status">將想交換的物資放入中央共用窗</p>
+    </footer>
+  </main>
+
+  <div class="item-tooltip" id="itemTooltip" role="tooltip"></div>
+  <div class="drag-layer" id="dragLayer" aria-hidden="true"></div>
+  <div class="complete-overlay" id="completeOverlay" hidden>
+    <div><p class="eyebrow">TRADE COMPLETE</p><h2>交換完成</h2><span>雙方已收下目前背包中的物資</span><button id="completeReset" type="button">再次測試</button></div>
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,117 @@
+:root {
+  --ink: #070a08;
+  --panel: #0c110e;
+  --line: #4b4c40;
+  --paper: #e5dcc6;
+  --muted: #97998f;
+  --brass: #c7a45e;
+  --health: #93ae89;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  min-height: 100vh;
+  margin: 0;
+  color: var(--paper);
+  background:
+    linear-gradient(rgb(4 7 5 / 80%), rgb(4 7 5 / 92%)),
+    url("battle/assets/victorian-street.webp") center / cover fixed;
+  font-family: "Noto Serif TC", "Microsoft JhengHei", serif;
+}
+
+button { font: inherit; }
+
+.rest-shell {
+  width: min(1180px, calc(100% - 40px));
+  margin: auto;
+  padding: 32px 0 48px;
+}
+
+header {
+  display: flex;
+  align-items: end;
+  gap: 18px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid var(--line);
+}
+
+header p, small {
+  color: var(--brass);
+  font-size: .66rem;
+  font-weight: 800;
+  letter-spacing: .12em;
+}
+
+header p { position: absolute; align-self: start; margin: 0; }
+header h1 { margin: 15px 0 0; font-size: clamp(2.4rem, 5vw, 4.6rem); font-weight: 400; }
+header span { margin-bottom: 10px; color: var(--muted); }
+
+.panel {
+  border: 1px solid var(--line);
+  background: rgb(10 15 12 / 94%);
+  box-shadow: 0 20px 60px rgb(0 0 0 / 32%);
+}
+
+.rest-layout {
+  display: grid;
+  grid-template-columns: minmax(300px, .8fr) minmax(380px, 1.2fr);
+  gap: 18px;
+  margin-top: 24px;
+}
+
+.survivor-card {
+  display: grid;
+  grid-template-columns: 96px 1fr;
+  gap: 18px;
+  align-items: center;
+  padding: 20px;
+}
+
+.survivor-card img { width: 96px; height: 112px; object-fit: cover; border: 1px solid #6e6652; }
+h2, h3, p { margin: 0; }
+.survivor-card h2, .route-card h2, .inventory h2 { margin-top: 5px; font-size: 1.7rem; font-weight: 400; }
+.health-copy { display: flex; justify-content: space-between; margin-top: 20px; color: var(--muted); font-size: .76rem; }
+.health-copy strong { color: var(--paper); }
+.health-track { height: 6px; margin-top: 7px; background: #252b26; }
+.health-track i { display: block; height: 100%; background: var(--health); transition: width .35s ease; }
+.hideout-rest { display: flex; align-items: center; gap: 10px; margin-top: 14px; }
+.hideout-rest button {
+  min-height: 32px;
+  padding: 0 12px;
+  border: 1px solid #6f765f;
+  color: var(--paper);
+  background: #161d17;
+  cursor: pointer;
+}
+.hideout-rest button:disabled { opacity: .38; cursor: default; }
+.hideout-rest span { color: var(--health); font-size: .75rem; }
+
+.route-card { padding: 24px; }
+.route-card p { max-width: 620px; margin: 12px 0 22px; color: var(--muted); line-height: 1.7; }
+.route-card button, .item-card button {
+  min-height: 42px;
+  padding: 0 20px;
+  border: 1px solid var(--brass);
+  color: #17130b;
+  background: #e1c98d;
+  cursor: pointer;
+}
+
+.inventory { margin-top: 18px; padding: 22px; }
+.section-heading { display: flex; justify-content: space-between; align-items: end; gap: 20px; }
+.section-heading > p { color: var(--muted); font-size: .75rem; }
+.inventory-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 18px; }
+.item-card { position: relative; min-height: 132px; padding: 15px; border: 1px solid #464a41; background: #0c110e; }
+.item-card h3 { margin-top: 5px; font-size: 1.05rem; font-weight: 400; }
+.item-card p { margin-top: 7px; color: var(--muted); font-size: .68rem; }
+.item-card > strong { position: absolute; top: 14px; right: 14px; color: var(--brass); }
+.item-card button { position: absolute; right: 12px; bottom: 12px; min-height: 30px; padding: 0 14px; font-size: .68rem; }
+.item-card button:disabled { opacity: .3; cursor: default; }
+.phase-rule, .empty-inventory { margin-top: 16px; color: var(--muted); font-size: .7rem; }
+.reset-button { margin-top: 18px; border: 0; color: #777c74; background: transparent; cursor: pointer; }
+
+@media (max-width: 760px) {
+  .rest-layout, .inventory-grid { grid-template-columns: 1fr; }
+  .section-heading { align-items: start; flex-direction: column; }
+}

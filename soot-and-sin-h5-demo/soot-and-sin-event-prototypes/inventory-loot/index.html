@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>煤灰與惡｜物資整理</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="screen-shell">
+    <header class="topbar">
+      <div class="brand">
+        <span class="brand-mark" aria-hidden="true">S&amp;S</span>
+        <div>
+          <p class="eyebrow">SOOT AND SIN</p>
+          <h1>物資整理</h1>
+        </div>
+      </div>
+      <p class="context"><span class="context-dot"></span>搜索結束 · 帶走需要的東西</p>
+    </header>
+
+    <section class="loot-panel" aria-labelledby="lootTitle">
+      <header class="panel-heading loot-heading">
+        <div>
+          <p class="eyebrow">FOUND SUPPLIES</p>
+          <h2 id="lootTitle">搜索所得</h2>
+        </div>
+        <div class="loot-meta">
+          <span id="lootCount">0 組</span>
+          <small>無容量限制</small>
+        </div>
+      </header>
+      <div class="loot-tray" id="lootTray" data-drop-zone="loot" aria-label="搜索所得暫存區"></div>
+    </section>
+
+    <section class="backpack-section">
+      <article class="backpack-panel">
+        <header class="panel-heading character-heading">
+          <img src="assets/scozirge-portrait.webp" alt="scozirge 頭像">
+          <div class="character-copy">
+            <p class="eyebrow">SURVIVOR</p>
+            <h2>scozirge</h2>
+          </div>
+          <div class="capacity">
+            <span>背包空間</span>
+            <strong id="capacityText">0 / 48</strong>
+          </div>
+        </header>
+        <div class="board-frame">
+          <div class="grid-board" id="backpackBoard" data-board="backpack" aria-label="角色背包格子"></div>
+        </div>
+        <div class="capacity-line" aria-hidden="true">
+          <span class="capacity-fill" id="capacityFill"></span>
+        </div>
+      </article>
+    </section>
+
+    <footer class="command-bar">
+      <div class="command-hint"><kbd>拖曳</kbd><span>移動物資</span></div>
+      <div class="command-hint"><kbd>R</kbd><span>拖曳時旋轉</span></div>
+      <div class="command-hint"><kbd>SHIFT</kbd><span>拖曳拆分一半</span></div>
+      <p id="statusText" role="status">選擇要帶走的物資</p>
+    </footer>
+  </main>
+
+  <div class="item-tooltip" id="itemTooltip" role="tooltip"></div>
+  <div class="drag-layer" id="dragLayer" aria-hidden="true"></div>
+  <script src="app.js"></script>
+</body>
+</html>

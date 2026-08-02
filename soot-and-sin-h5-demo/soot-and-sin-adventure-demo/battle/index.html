@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101311">
+  <title>煤灰與惡 — 冒險戰鬥</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="../inventory-distribution.css">
+  <link rel="stylesheet" href="../chapter-route.css">
+</head>
+<body>
+  <main class="game-shell">
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">冒險 · 戰鬥</p>
+        <h1>煤灰與惡 <span>(SOOT and SIN)</span></h1>
+      </div>
+      <div class="round-mark">
+        <span>惡魔行動</span>
+        <strong id="roundNumber">—</strong>
+      </div>
+    </header>
+
+    <section class="battlefield" aria-label="戰鬥區">
+      <div class="party-column">
+        <article id="playerCard" class="survivor actor-card panel">
+          <div class="panel-heading">
+            <div class="portrait">
+              <img src="assets/scozirge-portrait.webp" alt="scozirge">
+            </div>
+            <div>
+              <span class="actor-role">你</span>
+              <h2>scozirge</h2>
+            </div>
+          </div>
+          <div class="health-row">
+            <div class="health-copy">
+              <strong id="playerHealthText">72 / 72</strong>
+            </div>
+            <div class="health-track">
+              <div id="playerHealthBar" class="health-fill player-health"></div>
+            </div>
+          </div>
+          <div id="playerEffect" class="actor-effect" aria-live="polite"></div>
+        </article>
+
+        <article id="allyCard" class="survivor actor-card ally-card panel">
+          <div class="panel-heading">
+            <div class="portrait">
+              <img src="assets/survivor.webp" alt="Morrow">
+            </div>
+            <div>
+              <span class="actor-role">隊友</span>
+              <h2>Morrow</h2>
+            </div>
+          </div>
+          <div class="health-row">
+            <div class="health-copy">
+              <strong id="allyHealthText">64 / 64</strong>
+            </div>
+            <div class="health-track">
+              <div id="allyHealthBar" class="health-fill player-health"></div>
+            </div>
+          </div>
+          <div id="allyAction" class="ally-action">
+            <img id="allyActionIcon" src="assets/action-axe.webp" alt="">
+            <div>
+              <small>選擇行動</small>
+              <strong id="allyActionName">等待開始</strong>
+              <span class="ally-cast-track"><i id="allyActionBar"></i></span>
+            </div>
+            <b id="allyActionTime">—</b>
+          </div>
+          <div id="allyEffect" class="actor-effect" aria-live="polite"></div>
+        </article>
+      </div>
+
+      <section class="encounter">
+        <div id="intentCard" class="intent-card">
+          <p class="eyebrow">怪物下一步</p>
+          <div class="intent-line">
+            <span id="intentIcon" class="intent-icon">?</span>
+            <div>
+              <strong id="intentName">尚未開始</strong>
+              <p id="intentDescription">開始後會公開惡魔攻擊與發動時間。</p>
+              <span id="intentTarget" class="intent-target">目標：—</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="monster-stage">
+          <div class="fog fog-a"></div>
+          <div class="fog fog-b"></div>
+          <div class="monster-canvas">
+            <img id="monsterFigure" class="monster-figure" src="assets/soot-hound.webp" alt="惡魔">
+            <div id="partOverlays" class="hit-overlay-layer" aria-hidden="true"></div>
+            <svg id="partCallouts" class="part-callout-layer" viewBox="0 0 820 900"
+              aria-hidden="true"></svg>
+            <svg id="partGrid" class="hit-zone-layer" viewBox="0 0 820 900"
+              role="listbox" aria-label="怪物可攻擊部位"></svg>
+          </div>
+          <div id="damageNumber" class="damage-number" aria-live="polite"></div>
+        </div>
+
+        <div class="monster-title">
+          <h2>惡魔</h2>
+          <strong id="monsterHealthText">90 / 90</strong>
+        </div>
+        <div class="health-track monster-track">
+          <div id="monsterHealthBar" class="health-fill monster-health"></div>
+        </div>
+      </section>
+
+      <aside class="combat-log panel">
+        <div class="log-heading">
+          <p class="eyebrow">戰鬥紀錄</p>
+          <span class="pulse-dot"></span>
+        </div>
+        <ol id="combatLog">
+          <li class="quiet">等待遭遇開始。</li>
+        </ol>
+      </aside>
+    </section>
+
+    <section class="command-panel" aria-label="行動選擇">
+      <div class="timeline-header">
+        <p class="eyebrow">惡魔行動時間軸</p>
+        <div id="timer" class="timer" aria-live="polite">
+          <strong id="timerText">—</strong><span>秒</span>
+        </div>
+      </div>
+      <div class="combat-timeline" aria-label="惡魔下一次行動倒數">
+        <div id="timerBar" class="timeline-elapsed"></div>
+        <div id="timelineCursor" class="timeline-cursor"><span>現在</span></div>
+        <div class="timeline-end">
+          <strong id="timelineEndLabel">惡魔行動</strong>
+        </div>
+      </div>
+
+      <div id="playerCast" class="player-cast" aria-live="polite">
+        <span id="playerCastName">行動待命</span>
+        <div class="player-cast-track"><div id="playerCastBar"></div></div>
+        <strong id="playerCastTime">—</strong>
+      </div>
+
+      <div class="action-tray-header">
+        <p id="decisionPreview" class="decision-preview">拖曳瀏覽行動，點擊一張牌</p>
+        <span class="drag-hint">↔ 拖曳瀏覽</span>
+      </div>
+      <div id="actionGrid" class="action-grid" role="listbox" aria-label="可用行動"></div>
+    </section>
+  </main>
+
+  <div id="modal" class="modal open" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal-card">
+      <p id="modalEyebrow" class="eyebrow">部位戰鬥測試</p>
+      <h2 id="modalTitle">在付出代價後理解牠</h2>
+      <p id="modalBody">
+        你將與 Morrow 共同戰鬥。惡魔會公開下一步與攻擊目標；
+        武器有使用次數，肉搏、防禦與閃避則能持續使用。
+      </p>
+      <div class="rule-strip">
+        <span>確認目標</span><i>→</i><span>選擇部位</span><i>→</i><span>與隊友應戰</span>
+      </div>
+      <button id="startButton" class="start-button" type="button">開始遭遇</button>
+    </div>
+  </div>
+
+  <div id="lootModal" class="modal loot-modal" role="dialog" aria-modal="true" aria-labelledby="lootTitle">
+    <div class="loot-card">
+      <div class="loot-heading">
+        <div>
+          <p class="eyebrow">惡魔戰利品</p>
+          <h2 id="lootTitle">搜刮屍體</h2>
+        </div>
+        <div id="lootTimer" class="loot-timer">
+          <strong id="lootTimerText">15</strong><span>秒</span>
+        </div>
+      </div>
+      <div class="loot-timer-track"><i id="lootTimerBar"></i></div>
+      <p class="loot-rule">先拿先贏；也能把背包物資拖回公共區讓隊友拿取，無需確認。</p>
+      <div id="lootGrid" class="loot-grid"></div>
+      <div id="lootSummary" class="loot-summary" aria-live="polite"></div>
+      <button id="lootContinue" class="start-button loot-continue" type="button" hidden>
+        帶回戰利品
+      </button>
+    </div>
+  </div>
+
+  <script src="../adventure-state.js"></script>
+  <script src="../chapter-route.js"></script>
+  <script src="../inventory-distribution.js"></script>
+  <script src="game.js"></script>
+</body>
+</html>
