@@ -1,0 +1,16 @@
+# Godot 4+ specific ignores
+.godot/
+/android/
+
+# Local and generated builds
+/build/
+/dist/
+/artifacts/
+*.pck
+*.zip
+*.part
+
+# Local environment and secrets
+.env
+.env.*
+!.env.example
