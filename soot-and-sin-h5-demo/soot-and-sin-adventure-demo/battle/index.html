@@ -17,7 +17,7 @@
         <h1>煤灰與惡 <span>(SOOT and SIN)</span></h1>
       </div>
       <div class="round-mark">
-        <span>惡魔行動</span>
+        <span id="roundActionLabel">惡魔行動</span>
         <strong id="roundNumber">—</strong>
       </div>
     </header>
@@ -92,13 +92,9 @@
         <div class="monster-stage">
           <div class="fog fog-a"></div>
           <div class="fog fog-b"></div>
-          <div class="monster-canvas">
+          <div id="monsterCanvas" class="monster-canvas">
             <div id="monsterArt" class="monster-art">
-              <img class="monster-figure" src="assets/soot-hound.webp" alt="惡魔">
-              <img id="destroyedLeftLimb" class="damage-overlay"
-                src="assets/damage-overlays/soot-hound-left_limb-destroyed.png" alt="">
-              <img id="destroyedRightLimb" class="damage-overlay"
-                src="assets/damage-overlays/soot-hound-right_limb-destroyed.png" alt="">
+              <img id="monsterFigure" class="monster-figure" src="assets/soot-hound.webp" alt="惡魔">
             </div>
             <div id="partOverlays" class="hit-overlay-layer" aria-hidden="true"></div>
             <svg id="partCallouts" class="part-callout-layer" viewBox="0 0 820 900"
@@ -110,7 +106,7 @@
         </div>
 
         <div class="monster-title">
-          <h2>惡魔</h2>
+          <h2 id="monsterName">惡魔</h2>
           <strong id="monsterHealthText">90 / 90</strong>
         </div>
         <div class="health-track monster-track">
@@ -131,7 +127,7 @@
 
     <section class="command-panel" aria-label="行動選擇">
       <div class="timeline-header">
-        <p class="eyebrow">惡魔行動時間軸</p>
+        <p id="timelineTitle" class="eyebrow">惡魔行動時間軸</p>
         <div id="timer" class="timer" aria-live="polite">
           <strong id="timerText">—</strong><span>秒</span>
         </div>
@@ -177,7 +173,7 @@
     <div class="loot-card">
       <div class="loot-heading">
         <div>
-          <p class="eyebrow">惡魔戰利品</p>
+          <p id="lootEyebrow" class="eyebrow">惡魔戰利品</p>
           <h2 id="lootTitle">搜刮屍體</h2>
         </div>
         <div id="lootTimer" class="loot-timer">

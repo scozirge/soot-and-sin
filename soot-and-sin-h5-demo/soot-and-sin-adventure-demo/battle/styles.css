@@ -478,7 +478,7 @@ h1 span {
   position: relative;
   z-index: 2;
   height: 112%;
-  aspect-ratio: 820 / 900;
+  aspect-ratio: var(--monster-aspect, 820 / 900);
   max-width: 82%;
   filter: drop-shadow(0 20px 12px rgb(0 0 0 / 45%));
 }
@@ -530,6 +530,11 @@ h1 span {
 
 .damage-overlay.visible {
   opacity: 1;
+}
+
+.hit-overlay.clipped {
+  filter: sepia(1) saturate(4.2) hue-rotate(320deg) brightness(1.55) contrast(1.08);
+  mix-blend-mode: screen;
 }
 
 .monster-art.hit {
@@ -599,7 +604,7 @@ h1 span {
 .part-callout path {
   fill: none;
   stroke: #f3eee3;
-  stroke-width: 4;
+  stroke-width: var(--callout-stroke, 4px);
   stroke-linecap: round;
   stroke-linejoin: round;
   filter: drop-shadow(0 2px 3px #000);
@@ -617,7 +622,7 @@ h1 span {
   stroke-width: 8;
   paint-order: stroke;
   font-family: "Noto Serif TC", Georgia, serif;
-  font-size: 35px;
+  font-size: var(--callout-font-size, 35px);
   font-weight: 700;
   letter-spacing: .02em;
 }

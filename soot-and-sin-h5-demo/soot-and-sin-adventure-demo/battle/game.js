@@ -2,8 +2,37 @@
 
 const PLAYER_MAX_HEALTH = 72;
 const ALLY_MAX_HEALTH = 64;
-const MONSTER_MAX_HEALTH = 90;
 const adventureSession = AdventureState.load();
+const storyNode = AdventureState.currentNode(adventureSession);
+const isPainPriestEncounter = Boolean(
+  adventureSession.chapterStoryCombat && storyNode?.id === "pain_priest",
+);
+const encounter = isPainPriestEncounter
+  ? {
+      id: "pain-priest",
+      name: "苦痛祭司",
+      maxHealth: 90,
+      art: "assets/pain-priest.png",
+      aspect: "957 / 1643",
+      viewBox: "0 0 957 1643",
+      calloutFontSize: "58px",
+      calloutStroke: "6px",
+      calloutLineHeight: 68,
+      intro: "你與 Morrow 在房間牆角遭到苦痛祭司襲擊。",
+    }
+  : {
+      id: "soot-hound",
+      name: "惡魔",
+      maxHealth: 90,
+      art: "assets/soot-hound.webp",
+      aspect: "820 / 900",
+      viewBox: "0 0 820 900",
+      calloutFontSize: "35px",
+      calloutStroke: "4px",
+      calloutLineHeight: 42,
+      intro: "你與 Morrow 對上惡魔。",
+    };
+const MONSTER_MAX_HEALTH = encounter.maxHealth;
 function groupedInventory(category) {
   const grouped = new Map();
   adventureSession.inventory
@@ -120,7 +149,7 @@ const allyActions = {
   },
 };
 
-const lootItems = [
+const demonLootItems = [
   {
     id: "meat",
     name: "怪物肉",
@@ -144,48 +173,115 @@ const lootItems = [
     description: "不會出現在行動列。",
   },
 ];
+const lootItems = isPainPriestEncounter ? [] : demonLootItems;
 
 const carriedLoot = { meat: 0, claw: 0, head: 0 };
 let currentLootPool = [];
 
-const monsterActions = [
-  { id: "claw", type: "attack", name: "爪襲", icon: "≋", damage: 12, duration: 14, requiresAny: ["left_limb", "right_limb"] },
-  { id: "frenzy", type: "attack", name: "狂抓", icon: "✣", damage: 22, duration: 20, requiresAll: ["left_limb", "right_limb"] },
-  { id: "bite", type: "attack", name: "啃咬", icon: "!", damage: 32, duration: 30 },
-];
+const monsterActions = isPainPriestEncounter
+  ? [
+      { id: "bite", type: "attack", name: "咬", icon: "!", damage: 32, accuracy: 55, duration: 30 },
+      { id: "stab", type: "attack", name: "刺", icon: "†", damage: 30, accuracy: 90, duration: 24, requiresAll: ["right_hand"] },
+      { id: "claw", type: "attack", name: "爪", icon: "≋", damage: 12, accuracy: 90, duration: 10, requiresAll: ["left_hand"] },
+    ]
+  : [
+      { id: "claw", type: "attack", name: "爪襲", icon: "≋", damage: 12, accuracy: 100, duration: 14, requiresAny: ["left_limb", "right_limb"] },
+      { id: "frenzy", type: "attack", name: "狂抓", icon: "✣", damage: 22, accuracy: 100, duration: 20, requiresAll: ["left_limb", "right_limb"] },
+      { id: "bite", type: "attack", name: "啃咬", icon: "!", damage: 32, accuracy: 100, duration: 30 },
+    ];
 
-const regions = [
-  { id: "head", name: "頭顱", accuracy: 50, multiplier: 260, durabilityPercent: 80, stunSeconds: 2, lethal: true },
-  { id: "left_limb", name: "左側前肢", accuracy: 75, multiplier: 160, durabilityPercent: 60 },
-  { id: "right_limb", name: "右側前肢", accuracy: 85, multiplier: 140, durabilityPercent: 60 },
-];
+const regions = isPainPriestEncounter
+  ? [
+      {
+        id: "head", name: "頭", accuracy: 55, multiplier: 200, durabilityPercent: 50,
+        stunSeconds: 2, lethal: true,
+        damageImage: "assets/damage-overlays/pain-priest-head-destroyed.png",
+        damageClip: "polygon(37% 12%, 69% 12%, 70% 34%, 36% 34%)",
+        hitOverlayClip: "polygon(38% 14%, 67% 14%, 68% 33%, 37% 33%)",
+      },
+      {
+        id: "right_hand", name: "右手（持刀）", accuracy: 72, multiplier: 145, durabilityPercent: 40,
+        damageImage: "assets/damage-overlays/pain-priest-right_hand-destroyed.png",
+        damageClip: "polygon(7% 5%, 43% 5%, 43% 39%, 8% 39%)",
+        hitOverlayClip: "polygon(9% 7%, 41% 7%, 40% 38%, 10% 38%)",
+      },
+      {
+        id: "left_hand", name: "左手", accuracy: 78, multiplier: 135, durabilityPercent: 40,
+        damageImage: "assets/damage-overlays/pain-priest-left_hand-destroyed.png",
+        damageClip: "polygon(57% 28%, 86% 28%, 86% 55%, 56% 55%)",
+        hitOverlayClip: "polygon(58% 29%, 84% 29%, 84% 54%, 57% 54%)",
+      },
+      {
+        id: "legs", name: "雙腿", accuracy: 86, multiplier: 120, durabilityPercent: 30,
+        speedMultiplier: .7,
+        damageImage: "assets/damage-overlays/pain-priest-legs-destroyed.png",
+        damageClip: "polygon(22% 42%, 76% 42%, 78% 94%, 20% 94%)",
+        hitOverlayClip: "polygon(25% 43%, 73% 43%, 75% 92%, 22% 92%)",
+      },
+    ]
+  : [
+      {
+        id: "head", name: "頭顱", accuracy: 50, multiplier: 260, durabilityPercent: 80,
+        stunSeconds: 2, lethal: true,
+        hitOverlayImage: "assets/hit-overlays/soot-hound-head.png",
+      },
+      {
+        id: "left_limb", name: "左側前肢", accuracy: 75, multiplier: 160, durabilityPercent: 60,
+        hitOverlayImage: "assets/hit-overlays/soot-hound-left_limb.png",
+        damageImage: "assets/damage-overlays/soot-hound-left_limb-destroyed.png",
+        damageElementId: "destroyedLeftLimb",
+        damageClip: "polygon(0 22%, 45% 22%, 45% 100%, 0 100%)",
+      },
+      {
+        id: "right_limb", name: "右側前肢", accuracy: 85, multiplier: 140, durabilityPercent: 60,
+        hitOverlayImage: "assets/hit-overlays/soot-hound-right_limb.png",
+        damageImage: "assets/damage-overlays/soot-hound-right_limb-destroyed.png",
+        damageElementId: "destroyedRightLimb",
+        damageClip: "polygon(52% 20%, 100% 20%, 100% 100%, 52% 100%)",
+      },
+    ];
 
 const headHitPath = "M348 284C356 279 364 284 370 290C377 285 384 285 391 291C399 284 407 283 415 290C423 286 431 290 438 297C448 307 452 320 451 334C450 350 445 365 438 379C431 394 423 406 416 419C407 434 401 447 393 457C383 447 377 433 369 422C360 411 353 398 346 385C338 370 333 354 332 337C331 319 337 301 348 284Z";
 const leftLimbHitPath = "M270 302C244 320 232 354 226 390C220 430 207 469 194 510C178 552 166 597 154 644C145 682 140 714 138 735C126 755 105 769 87 780L52 800C42 807 47 819 59 818L102 801L75 824C68 833 80 840 91 834L123 811L111 839C107 852 124 854 132 842L148 816L156 844C160 856 176 852 178 839L170 806C178 795 185 784 190 770C197 741 200 711 207 679C218 630 230 582 242 536C253 490 269 448 280 405C289 370 303 342 302 322C294 310 283 303 270 302Z";
 const rightLimbHitPath = "M468 294C495 292 522 312 542 337C568 368 593 398 616 430C634 455 645 475 643 495C640 520 636 548 632 580L615 688C611 713 606 731 600 746C612 760 631 779 646 794C657 804 650 817 638 812L605 787L627 823C634 836 617 843 608 831L585 797L594 838C598 852 579 856 572 842L560 802L545 840C540 854 523 848 526 834L540 790C529 778 516 769 505 757C498 748 503 736 514 735C527 732 546 737 558 744C565 724 571 702 576 679L594 570C598 542 602 515 604 492C583 474 560 455 538 437C510 414 486 391 469 366C450 338 443 313 468 294Z";
+const priestHeadHitPath = "M442 275C476 244 550 238 599 267C638 291 654 337 645 390C636 446 605 494 549 513C496 519 449 493 426 447C405 399 408 316 442 275Z";
+const priestRightHandHitPath = "M143 177C174 143 215 130 253 151C282 168 310 190 335 215L367 253C388 280 381 319 353 340L332 359C350 404 361 461 352 506L344 564L313 591L293 563L294 491C279 470 251 452 222 433L174 397C143 370 125 330 122 286C119 238 124 199 143 177Z";
+const priestLeftHandHitPath = "M597 444C634 438 667 460 692 492C720 527 744 570 758 610C771 650 773 696 754 733C739 760 709 783 680 779C650 775 626 755 610 733L579 687C557 653 545 613 548 571C551 520 566 474 597 444Z";
+const priestLegsHitPath = "M348 679C405 650 516 651 585 680C633 731 654 826 665 932L682 1132C691 1246 670 1389 625 1487C596 1522 552 1520 517 1489L484 1426L446 1485C412 1521 361 1519 330 1482C293 1387 283 1262 290 1139L300 933C306 820 316 731 348 679Z";
 
-const hitZonePaths = {
-  head: headHitPath,
-  left_limb: leftLimbHitPath,
-  right_limb: rightLimbHitPath,
-};
+const hitZonePaths = isPainPriestEncounter
+  ? {
+      head: priestHeadHitPath,
+      right_hand: priestRightHandHitPath,
+      left_hand: priestLeftHandHitPath,
+      legs: priestLegsHitPath,
+    }
+  : { head: headHitPath, left_limb: leftLimbHitPath, right_limb: rightLimbHitPath };
 
-const calloutLayouts = {
-  head: { path: "M392 330L540 175H805", anchor: [392, 330], x: 620, y: 108 },
-  left_limb: { path: "M177 590L95 500H5", anchor: [177, 590], x: 12, y: 430 },
-  right_limb: { path: "M604 570L700 490H815", anchor: [604, 570], x: 682, y: 420 },
-};
+const calloutLayouts = isPainPriestEncounter
+  ? {
+      head: { path: "M535 350L700 190H952", anchor: [535, 350], x: 690, y: 116 },
+      right_hand: { path: "M252 270L115 170H5", anchor: [252, 270], x: 16, y: 98 },
+      left_hand: { path: "M687 628L820 545H952", anchor: [687, 628], x: 775, y: 465 },
+      legs: { path: "M485 1130L215 1060H5", anchor: [485, 1130], x: 16, y: 980 },
+    }
+  : {
+      head: { path: "M392 330L540 175H805", anchor: [392, 330], x: 620, y: 108 },
+      left_limb: { path: "M177 590L95 500H5", anchor: [177, 590], x: 12, y: 430 },
+      right_limb: { path: "M604 570L700 490H815", anchor: [604, 570], x: 682, y: 420 },
+    };
 
-const hitFeedbackPositions = {
-  head: [48, 38],
-  left_limb: [22, 66],
-  right_limb: [73, 66],
-};
+const hitFeedbackPositions = isPainPriestEncounter
+  ? { head: [55, 25], right_hand: [26, 25], left_hand: [72, 42], legs: [50, 72] }
+  : { head: [48, 38], left_limb: [22, 66], right_limb: [73, 66] };
 
-const partKeys = { head: "Q", left_limb: "W", right_limb: "E" };
+const partKeys = isPainPriestEncounter
+  ? { head: "Q", right_hand: "W", left_hand: "E", legs: "R" }
+  : { head: "Q", left_limb: "W", right_limb: "E" };
 
 const elements = {
   round: document.querySelector("#roundNumber"),
+  roundActionLabel: document.querySelector("#roundActionLabel"),
   timer: document.querySelector("#timer"),
   timerText: document.querySelector("#timerText"),
   timerBar: document.querySelector("#timerBar"),
@@ -220,9 +316,11 @@ const elements = {
   allyEffect: document.querySelector("#allyEffect"),
   monsterHealthText: document.querySelector("#monsterHealthText"),
   monsterHealthBar: document.querySelector("#monsterHealthBar"),
+  monsterCanvas: document.querySelector("#monsterCanvas"),
   monsterArt: document.querySelector("#monsterArt"),
-  destroyedLeftLimb: document.querySelector("#destroyedLeftLimb"),
-  destroyedRightLimb: document.querySelector("#destroyedRightLimb"),
+  monsterFigure: document.querySelector("#monsterFigure"),
+  monsterName: document.querySelector("#monsterName"),
+  timelineTitle: document.querySelector("#timelineTitle"),
   damageNumber: document.querySelector("#damageNumber"),
   log: document.querySelector("#combatLog"),
   modal: document.querySelector("#modal"),
@@ -235,6 +333,7 @@ const elements = {
   lootTimerText: document.querySelector("#lootTimerText"),
   lootTimerBar: document.querySelector("#lootTimerBar"),
   lootGrid: document.querySelector("#lootGrid"),
+  lootEyebrow: document.querySelector("#lootEyebrow"),
   lootSummary: document.querySelector("#lootSummary"),
   lootContinue: document.querySelector("#lootContinue"),
 };
@@ -245,6 +344,28 @@ let lootTimerId;
 let lootDistributionUi;
 let lootClaimTimers = [];
 let ignoreTrayClick = false;
+
+function configureEncounterView() {
+  elements.roundActionLabel.textContent = `${encounter.name}行動`;
+  elements.timelineTitle.textContent = `${encounter.name}行動時間軸`;
+  elements.timelineEndLabel.textContent = `${encounter.name}行動`;
+  elements.monsterName.textContent = encounter.name;
+  elements.monsterFigure.src = encounter.art;
+  elements.monsterFigure.alt = encounter.name;
+  elements.monsterCanvas.style.setProperty("--monster-aspect", encounter.aspect);
+  elements.monsterCanvas.style.setProperty("--callout-font-size", encounter.calloutFontSize);
+  elements.monsterCanvas.style.setProperty("--callout-stroke", encounter.calloutStroke);
+  elements.partGrid.setAttribute("viewBox", encounter.viewBox);
+  elements.partCallouts.setAttribute("viewBox", encounter.viewBox);
+  elements.intentDescription.textContent = `開始後會公開${encounter.name}的攻擊、命中率與發動時間。`;
+  elements.lootEyebrow.textContent = `${encounter.name}戰利品`;
+  if (isPainPriestEncounter) {
+    elements.modalEyebrow.textContent = "劇本遭遇 · 部位戰鬥";
+    elements.modalTitle.textContent = "牆角的人影撲了上來";
+    elements.modalBody.textContent = "苦痛祭司會咬、持刀刺擊與用長指甲抓撓。命中頭部可使她暈眩；破壞雙手會封鎖對應招式，破壞雙腿則會降低行動速度。";
+    elements.start.textContent = "迎戰苦痛祭司";
+  }
+}
 
 function randomLootClaimDelay() { return 1000 + Math.random() * 4000; }
 function lootKey(item) { return item.instanceId ?? item.claimId ?? item.id; }
@@ -282,6 +403,8 @@ function resetState() {
     previousMonsterAction: null,
     monsterStartedAt: 0,
     monsterEndsAt: 0,
+    monsterActionDuration: 0,
+    monsterSpeedMultiplier: 1,
     monsterStunnedUntil: 0,
     monsterPausedRemaining: 0,
     parts: createParts(),
@@ -307,10 +430,14 @@ function startGame() {
   elements.modal.classList.remove("open");
   elements.lootModal.classList.remove("open");
   elements.log.replaceChildren();
-  addLog("<strong>遭遇開始。</strong>你與 Morrow 對上惡魔。");
+  addLog(`<strong>遭遇開始。</strong>${encounter.intro}`);
   state.active = true;
   beginMonsterAction(performance.now());
   timerId = setInterval(tick, 50);
+}
+
+function getMonsterActionDuration(action) {
+  return action.duration / state.monsterSpeedMultiplier;
 }
 
 function beginMonsterAction(now, replacement = false) {
@@ -321,7 +448,8 @@ function beginMonsterAction(now, replacement = false) {
   state.previousMonsterAction = state.currentMonsterAction.id;
   state.allyActionsThisTurn = 0;
   state.monsterStartedAt = now;
-  state.monsterEndsAt = now + state.currentMonsterAction.duration * 1000;
+  state.monsterActionDuration = getMonsterActionDuration(state.currentMonsterAction);
+  state.monsterEndsAt = now + state.monsterActionDuration * 1000;
   state.monsterStunnedUntil = 0;
   state.monsterPausedRemaining = 0;
 
@@ -329,7 +457,7 @@ function beginMonsterAction(now, replacement = false) {
   elements.intentCard.className = "intent-card danger";
   elements.intentIcon.textContent = attack.icon;
   elements.intentName.textContent = attack.name;
-  elements.intentDescription.textContent = `傷害 ${attack.damage} · ${formatSeconds(attack.duration)} 秒後發動`;
+  elements.intentDescription.textContent = `傷害 ${attack.damage} · 命中 ${attack.accuracy}% · ${formatSeconds(state.monsterActionDuration)} 秒後發動`;
   elements.intentTarget.textContent = `目標：${state.monsterTarget === "player" ? "scozirge" : "Morrow"}`;
   renderMonsterTarget();
   if (!state.allyTask && !state.allyWaitingForMonster && state.allyHealth > 0) startAllyAction(now);
@@ -369,11 +497,26 @@ function stunMonster(seconds, now = performance.now()) {
   state.monsterEndsAt = state.monsterStunnedUntil + state.monsterPausedRemaining;
 }
 
+function reduceMonsterSpeed(multiplier, now = performance.now()) {
+  if (!state.currentMonsterAction || multiplier >= state.monsterSpeedMultiplier) return;
+  const previousMultiplier = state.monsterSpeedMultiplier;
+  const remainingScale = previousMultiplier / multiplier;
+  state.monsterSpeedMultiplier = multiplier;
+  state.monsterActionDuration = getMonsterActionDuration(state.currentMonsterAction);
+  if (now < state.monsterStunnedUntil) {
+    state.monsterPausedRemaining *= remainingScale;
+    state.monsterEndsAt = state.monsterStunnedUntil + state.monsterPausedRemaining;
+  } else {
+    const remaining = Math.max(0, state.monsterEndsAt - now) * remainingScale;
+    state.monsterEndsAt = now + remaining;
+  }
+}
+
 function replaceInvalidMonsterAction(now = performance.now()) {
   if (!state.currentMonsterAction || canMonsterUseAction(state.currentMonsterAction)) return;
   const canceled = state.currentMonsterAction.name;
   const stunRemaining = Math.max(0, state.monsterStunnedUntil - now);
-  addLog(`<strong>${canceled}取消。</strong>必要部位已被破壞，惡魔改用其他行動。`);
+  addLog(`<strong>${canceled}取消。</strong>必要部位已被破壞，${encounter.name}改用其他行動。`);
   beginMonsterAction(now, true);
   if (stunRemaining > 0) stunMonster(stunRemaining / 1000, now);
 }
@@ -399,12 +542,17 @@ function applyPartDamage(part, damage, now = performance.now()) {
   if (part.damageTaken >= part.durability) {
     part.destroyed = true;
     cancelTasksForPart(part);
+    if (part.speedMultiplier) reduceMonsterSpeed(part.speedMultiplier, now);
     if (part.lethal) state.monsterHealth = 0;
     else if (state.monsterHealth > 0) replaceInvalidMonsterAction(now);
     return {
       destroyed: true,
       stunned: false,
-      effect: part.lethal ? `${part.name}破壞，惡魔即死` : `${part.name}破壞`,
+      effect: part.lethal
+        ? `${part.name}破壞，${encounter.name}死亡`
+        : part.speedMultiplier
+          ? `${part.name}破壞，行動速度降低 30%`
+          : `${part.name}破壞`,
     };
   }
 
@@ -455,7 +603,7 @@ function updateDecision(now = performance.now()) {
   }
 
   if (state.waitingForMonster) {
-    elements.preview.textContent = `${state.preparedDefense?.name ?? "防禦行動"}已準備，等待惡魔出手`;
+    elements.preview.textContent = `${state.preparedDefense?.name ?? "防禦行動"}已準備，等待${encounter.name}出手`;
     updatePlayerCast(now);
     return;
   }
@@ -544,12 +692,12 @@ function updateTimeline(now = performance.now()) {
     elements.timerText.textContent = "—";
     elements.timerBar.style.width = "0%";
     elements.timelineCursor.style.left = "0%";
-    elements.timelineEndLabel.textContent = "惡魔行動";
+    elements.timelineEndLabel.textContent = `${encounter.name}行動`;
     return;
   }
 
   const stunned = now < state.monsterStunnedUntil;
-  const total = action.duration * 1000;
+  const total = state.monsterActionDuration * 1000;
   const remaining = stunned
     ? state.monsterPausedRemaining
     : Math.max(0, state.monsterEndsAt - now);
@@ -563,7 +711,7 @@ function updateTimeline(now = performance.now()) {
   elements.intentCard.classList.toggle("stunned", stunned);
   elements.intentDescription.textContent = stunned
     ? `暈眩中 · 倒數暫停 ${stunSeconds < 1 ? stunSeconds.toFixed(1) : Math.ceil(stunSeconds)} 秒`
-    : `傷害 ${action.damage} · ${formatSeconds(action.duration)} 秒後發動`;
+    : `傷害 ${action.damage} · 命中 ${action.accuracy}% · ${formatSeconds(state.monsterActionDuration)} 秒後發動`;
   const danger = !stunned && seconds <= 3;
   elements.timer.classList.toggle("danger", danger);
   elements.timerBar.classList.toggle("danger", danger);
@@ -666,7 +814,7 @@ function finishAllyAction(eventTime) {
     state.allyWaitingForMonster = true;
     elements.allyCard.classList.add("guarding");
     showActorEffect("ally", "防禦準備");
-    result = `防禦已準備，惡魔下一擊減少 ${task.action.defense} 傷害`;
+    result = `防禦已準備，${encounter.name}下一擊減少 ${task.action.defense} 傷害`;
   }
 
   addLog(`<strong>Morrow 行動 ${state.allyActionCount}</strong>　${result}。`);
@@ -722,8 +870,8 @@ function finishPlayerAction() {
   } else {
     state.preparedDefense = task.action;
     result = task.action.type === "dodge"
-      ? "閃避已準備，將避開惡魔下一擊"
-      : `防禦已準備，惡魔下一擊減少 ${task.action.defense} 傷害`;
+      ? `閃避已準備，將避開${encounter.name}下一擊`
+      : `防禦已準備，${encounter.name}下一擊減少 ${task.action.defense} 傷害`;
   }
 
   state.selectedPart = null;
@@ -765,13 +913,16 @@ function resolveMonsterAction() {
   const target = state.monsterTarget;
   const targetName = target === "player" ? "scozirge" : "Morrow";
   const defense = target === "player" ? state.preparedDefense : state.allyPreparedDefense;
-  let damage = action.damage;
-  let result = `${action.name}對${targetName}造成 ${damage} 傷害`;
+  const hit = Math.random() * 100 < action.accuracy;
+  let damage = hit ? action.damage : 0;
+  let result = hit
+    ? `${action.name}對${targetName}造成 ${damage} 傷害`
+    : `${action.name}沒有命中${targetName}`;
 
-  if (defense?.type === "dodge") {
+  if (hit && defense?.type === "dodge") {
     damage = 0;
     result = `${targetName}閃避成功，完全避開${action.name}`;
-  } else if (defense?.type === "defend") {
+  } else if (hit && defense?.type === "defend") {
     damage = Math.max(0, damage - defense.defense);
     result = `${targetName}防禦成功，${action.name}只造成 ${damage} 傷害`;
   }
@@ -781,8 +932,13 @@ function resolveMonsterAction() {
   state.waitingForMonster = false;
   state.allyWaitingForMonster = false;
   elements.allyCard.classList.remove("guarding");
-  takeActorDamage(target, damage);
-  addLog(`<strong>惡魔行動 ${state.monsterTurn}</strong>　${result}。`);
+  if (hit) {
+    takeActorDamage(target, damage);
+  } else {
+    animateMonster("attack");
+    showActorEffect(target, "落空");
+  }
+  addLog(`<strong>${encounter.name}行動 ${state.monsterTurn}</strong>　${result}。`);
   updateView();
 }
 
@@ -945,12 +1101,27 @@ function enableActionTray() {
   }, { passive: false });
 }
 
+function renderDamageOverlays() {
+  elements.monsterArt.querySelectorAll(".damage-overlay").forEach((layer) => layer.remove());
+  regions.filter((region) => region.damageImage).forEach((region) => {
+    const part = state.parts.find((item) => item.id === region.id);
+    const layer = document.createElement("img");
+    layer.className = "damage-overlay";
+    layer.src = region.damageImage;
+    layer.alt = "";
+    layer.dataset.part = region.id;
+    if (region.damageElementId) layer.id = region.damageElementId;
+    if (region.damageClip) layer.style.clipPath = region.damageClip;
+    if (part?.destroyed) layer.classList.add("visible");
+    elements.monsterArt.append(layer);
+  });
+}
+
 function renderParts() {
   const action = actions.find((item) => item.id === state.selectedAction);
   const choosingAttack = action?.type === "attack";
   const interactive = choosingAttack && !state.playerTask;
-  elements.destroyedLeftLimb.classList.toggle("visible", state.parts.find((part) => part.id === "left_limb").destroyed);
-  elements.destroyedRightLimb.classList.toggle("visible", state.parts.find((part) => part.id === "right_limb").destroyed);
+  renderDamageOverlays();
   elements.partGrid.classList.toggle("locked", !interactive);
   elements.partOverlays.classList.toggle("locked", !choosingAttack);
   const overlays = [];
@@ -958,8 +1129,12 @@ function renderParts() {
     const overlay = document.createElement("img");
     overlay.className = "hit-overlay";
     overlay.dataset.part = part.id;
-    overlay.src = `assets/hit-overlays/soot-hound-${part.id}.png`;
+    overlay.src = part.hitOverlayImage ?? encounter.art;
     overlay.alt = "";
+    if (part.hitOverlayClip) {
+      overlay.style.clipPath = part.hitOverlayClip;
+      overlay.classList.add("clipped");
+    }
     if (state.selectedPart === part.id) overlay.classList.add("selected");
     if (part.destroyed) overlay.classList.add("destroyed");
     overlays.push(overlay);
@@ -1016,7 +1191,7 @@ function appendPartCallout(part, destroyed) {
   if (destroyed) group.classList.add("destroyed");
   group.innerHTML = destroyed
     ? `<path d="${layout.path}"></path><circle cx="${layout.anchor[0]}" cy="${layout.anchor[1]}" r="6"></circle><text x="${layout.x}" y="${layout.y}"><tspan x="${layout.x}">${part.name}：已破壞</tspan></text>`
-    : `<path d="${layout.path}"></path><circle cx="${layout.anchor[0]}" cy="${layout.anchor[1]}" r="6"></circle><text x="${layout.x}" y="${layout.y}"><tspan x="${layout.x}">命中：${accuracy}</tspan><tspan x="${layout.x}" dy="42">傷害：${multiplier}</tspan></text>`;
+    : `<path d="${layout.path}"></path><circle cx="${layout.anchor[0]}" cy="${layout.anchor[1]}" r="6"></circle><text x="${layout.x}" y="${layout.y}"><tspan x="${layout.x}">命中：${accuracy}</tspan><tspan x="${layout.x}" dy="${encounter.calloutLineHeight}">傷害：${multiplier}</tspan></text>`;
   elements.partCallouts.append(group);
 }
 
@@ -1166,7 +1341,9 @@ function resolveLoot() {
 function finishAdventureCombat() {
   const adventure = AdventureState.load();
   adventure.playerHealth = state.playerHealth;
-  adventure.inventory = lootDistributionUi.getInventory().map(normalizeBattleInventory);
+  if (lootDistributionUi) {
+    adventure.inventory = lootDistributionUi.getInventory().map(normalizeBattleInventory);
+  }
   adventure.pendingLoot = [];
   adventure.completedEvents += 1;
   adventure.eventCycle += 1;
@@ -1215,14 +1392,16 @@ function finishGame(victory) {
   state.active = false;
   clearInterval(timerId);
   if (victory) {
-    setTimeout(openLoot, 450);
+    const adventure = AdventureState.load();
+    const hasLoot = lootItems.length > 0 || adventure.pendingLoot.length > 0;
+    setTimeout(hasLoot ? openLoot : finishAdventureCombat, 450);
     return;
   }
   const known = state.parts.filter((part) => part.revealed).length;
   elements.modalEyebrow.textContent = "遠征失敗";
   elements.modalTitle.textContent = "情報沒能救下你";
-  elements.modalBody.textContent = `你撐過 ${state.monsterTurn} 次惡魔行動，與 Morrow 識破 ${known}/${state.parts.length} 個部位。`;
-  elements.start.textContent = "再次挑戰惡魔";
+  elements.modalBody.textContent = `你撐過 ${state.monsterTurn} 次${encounter.name}行動，與 Morrow 識破 ${known}/${state.parts.length} 個部位。`;
+  elements.start.textContent = `再次挑戰${encounter.name}`;
   setTimeout(() => elements.modal.classList.add("open"), 650);
 }
 
@@ -1237,9 +1416,11 @@ document.addEventListener("keydown", (event) => {
 
   const actionIndex = Number(event.key) - 1;
   if (actionIndex >= 0 && actionIndex < actions.length) selectAction(actions[actionIndex].id);
-  const partId = { q: "head", w: "left_limb", e: "right_limb" }[event.key.toLowerCase()];
+  const partId = Object.entries(partKeys)
+    .find(([, key]) => key.toLowerCase() === event.key.toLowerCase())?.[0];
   if (partId && state.parts.some((part) => part.id === partId)) selectPart(partId);
 });
 
+configureEncounterView();
 resetState();
 updateView();
