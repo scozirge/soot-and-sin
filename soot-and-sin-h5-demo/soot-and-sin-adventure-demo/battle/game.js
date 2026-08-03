@@ -176,6 +176,12 @@ const calloutLayouts = {
   right_limb: { path: "M604 570L700 490H815", anchor: [604, 570], x: 682, y: 420 },
 };
 
+const hitFeedbackPositions = {
+  head: [48, 38],
+  left_limb: [22, 66],
+  right_limb: [73, 66],
+};
+
 const partKeys = { head: "Q", left_limb: "W", right_limb: "E" };
 
 const elements = {
@@ -677,7 +683,7 @@ function performAllyAttack(action, part) {
   setTimeout(() => elements.allyCard.classList.remove("ally-attack"), 420);
 
   if (!hit) {
-    showDamage("隊友失誤");
+    showDamage("失誤", part, { source: "隊友" });
     showActorEffect("ally", "失誤");
     return { hit, damage: 0 };
   }
@@ -685,7 +691,7 @@ function performAllyAttack(action, part) {
   const damage = Math.round(action.damage * part.multiplier / 100);
   const outcome = applyPartDamage(part, damage);
   animateMonster("hit");
-  showDamage(outcome.effect ? `−${damage} · ${outcome.effect}` : damage, "隊友");
+  showDamage(damage, part, { source: "隊友", effect: outcome.effect, destroyed: outcome.destroyed });
   showActorEffect("ally", "命中");
   return { hit, damage, effect: outcome.effect };
 }
@@ -743,14 +749,14 @@ function performAttack(action, part) {
   const hitChance = action.accuracy * part.accuracy / 100;
   const hit = Math.random() * 100 < hitChance;
   if (!hit) {
-    showDamage("失誤");
+    showDamage("失誤", part);
     return { hit, damage: 0 };
   }
 
   const damage = Math.round(action.damage * part.multiplier / 100);
   const outcome = applyPartDamage(part, damage);
   animateMonster("hit");
-  showDamage(outcome.effect ? `−${damage} · ${outcome.effect}` : damage);
+  showDamage(damage, part, { effect: outcome.effect, destroyed: outcome.destroyed });
   return { hit, damage, effect: outcome.effect };
 }
 
@@ -943,8 +949,8 @@ function renderParts() {
   const action = actions.find((item) => item.id === state.selectedAction);
   const choosingAttack = action?.type === "attack";
   const interactive = choosingAttack && !state.playerTask;
-  elements.destroyedLeftLimb.hidden = !state.parts.find((part) => part.id === "left_limb").destroyed;
-  elements.destroyedRightLimb.hidden = !state.parts.find((part) => part.id === "right_limb").destroyed;
+  elements.destroyedLeftLimb.classList.toggle("visible", state.parts.find((part) => part.id === "left_limb").destroyed);
+  elements.destroyedRightLimb.classList.toggle("visible", state.parts.find((part) => part.id === "right_limb").destroyed);
   elements.partGrid.classList.toggle("locked", !interactive);
   elements.partOverlays.classList.toggle("locked", !choosingAttack);
   const overlays = [];
@@ -1039,10 +1045,22 @@ function addLog(html) {
   }));
 }
 
-function showDamage(value, source = "") {
-  const damage = typeof value === "number" ? `−${value}` : value;
-  elements.damageNumber.textContent = source ? `${source} ${damage}` : damage;
-  elements.damageNumber.classList.remove("show");
+function showDamage(value, part, { source = "", effect = "", destroyed = false } = {}) {
+  const [x, y] = hitFeedbackPositions[part?.id] ?? [50, 45];
+  const damage = document.createElement("strong");
+  damage.textContent = typeof value === "number" ? `−${value}` : value;
+  const details = document.createElement("span");
+  details.textContent = destroyed ? "部位破壞" : effect;
+  details.className = destroyed ? "part-break-label" : "damage-effect";
+  elements.damageNumber.style.setProperty("--feedback-x", `${x}%`);
+  elements.damageNumber.style.setProperty("--feedback-y", `${y}%`);
+  elements.damageNumber.classList.remove("show", "destroyed");
+  elements.damageNumber.replaceChildren(
+    ...(source ? [Object.assign(document.createElement("small"), { textContent: source })] : []),
+    damage,
+    ...(details.textContent ? [details] : []),
+  );
+  elements.damageNumber.classList.toggle("destroyed", destroyed);
   void elements.damageNumber.offsetWidth;
   elements.damageNumber.classList.add("show");
 }

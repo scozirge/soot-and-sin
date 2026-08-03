@@ -29,6 +29,7 @@ const assert = (condition, message) => {
     const left = state.parts.find((part) => part.id === "left_limb");
     const outcome = applyPartDamage(left, left.durability, now);
     updateView(now);
+    showDamage(left.durability, left, { destroyed: true });
     renderPartCallout(state.parts.find((part) => part.id === "right_limb"));
     const rightCallout = document.querySelector("#partCallouts").textContent;
     renderPartCallout(left);
@@ -42,8 +43,11 @@ const assert = (condition, message) => {
       destroyedLabel: document.querySelector(".part-callout.destroyed text")?.textContent,
       rightCallout,
       destroyedOverlay: Boolean(document.querySelector('.hit-overlay[data-part="left_limb"].destroyed')),
-      leftDamageLayer: !document.querySelector("#destroyedLeftLimb").hidden,
-      rightDamageLayer: !document.querySelector("#destroyedRightLimb").hidden,
+      leftDamageLayer: document.querySelector("#destroyedLeftLimb").classList.contains("visible"),
+      rightDamageLayer: document.querySelector("#destroyedRightLimb").classList.contains("visible"),
+      breakFeedback: document.querySelector("#damageNumber").textContent,
+      feedbackX: document.querySelector("#damageNumber").style.getPropertyValue("--feedback-x"),
+      feedbackFontSize: getComputedStyle(document.querySelector("#damageNumber")).fontSize,
       leaksDurability: document.querySelector("#partCallouts").textContent.includes("部位："),
     };
   });
@@ -52,6 +56,8 @@ const assert = (condition, message) => {
   assert(armResult.currentAction !== "frenzy" && !armResult.available.includes("frenzy"), "單手破壞後仍可使用狂抓");
   assert(armResult.destroyedLabel?.includes("已破壞") && armResult.destroyedOverlay, "破壞部位沒有清楚標示");
   assert(armResult.leftDamageLayer && !armResult.rightDamageLayer, "單手破壞圖層顯示錯誤");
+  assert(armResult.breakFeedback.includes("部位破壞") && armResult.feedbackX === "22%", "破壞提示沒有顯示在受擊部位");
+  assert(parseFloat(armResult.feedbackFontSize) <= 24.1, "傷害跳字沒有縮小 30%");
   assert(!armResult.rightCallout.includes("已破壞"), "指向右手時不應同時顯示左手破壞標示");
   assert(!armResult.leaksDurability, "介面不應顯示隱藏的部位耐久");
 
@@ -60,15 +66,19 @@ const assert = (condition, message) => {
     applyPartDamage(right, right.durability);
     updateView();
     animateMonster("hit");
+    showDamage(right.durability, right, { destroyed: true });
     return {
-      leftDamageLayer: !document.querySelector("#destroyedLeftLimb").hidden,
-      rightDamageLayer: !document.querySelector("#destroyedRightLimb").hidden,
+      leftDamageLayer: document.querySelector("#destroyedLeftLimb").classList.contains("visible"),
+      rightDamageLayer: document.querySelector("#destroyedRightLimb").classList.contains("visible"),
       imageLayers: document.querySelectorAll("#monsterArt > img").length,
       sharedHitAnimation: document.querySelector("#monsterArt").classList.contains("hit"),
+      rightBreakFeedback: document.querySelector("#damageNumber").textContent,
     };
   });
   assert(bothArms.leftDamageLayer && bothArms.rightDamageLayer, "雙手破壞圖層無法同時疊加");
   assert(bothArms.imageLayers === 3 && bothArms.sharedHitAnimation, "三張怪物圖沒有共用受擊放大動畫");
+  assert(bothArms.rightBreakFeedback.includes("部位破壞"), "右手破壞沒有顯示明顯提示");
+  await page.waitForTimeout(550);
   await page.screenshot({ path: path.resolve(__dirname, "../preview-demon-part-break.png"), fullPage: true });
 
   const headResult = await page.evaluate(() => {

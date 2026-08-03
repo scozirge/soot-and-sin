@@ -523,7 +523,13 @@ h1 span {
 }
 
 .damage-overlay {
+  opacity: 0;
   pointer-events: none;
+  transition: opacity .48s ease-out;
+}
+
+.damage-overlay.visible {
+  opacity: 1;
 }
 
 .monster-art.hit {
@@ -659,19 +665,49 @@ h1 span {
 .damage-number {
   position: absolute;
   z-index: 6;
-  top: 40%;
-  left: 58%;
+  top: var(--feedback-y, 45%);
+  left: var(--feedback-x, 50%);
+  display: grid;
+  min-width: 110px;
+  justify-items: center;
   color: var(--brass-light);
   font-family: Georgia, serif;
-  font-size: 2.15rem;
+  font-size: 1.5rem;
   font-weight: 700;
   opacity: 0;
   pointer-events: none;
+  white-space: nowrap;
   text-shadow: 0 3px 10px #000;
+}
+
+.damage-number small,
+.damage-effect {
+  color: #d7cdb8;
+  font: 700 .68rem "Noto Serif TC", Georgia, serif;
+  letter-spacing: .08em;
+}
+
+.part-break-label {
+  margin-top: 3px;
+  padding: 3px 9px 4px;
+  border: 1px solid #ef806c;
+  color: #ffe1d4;
+  background: rgb(77 14 10 / 88%);
+  box-shadow: 0 0 16px rgb(211 58 43 / 60%);
+  font: 900 .9rem "Noto Serif TC", Georgia, serif;
+  letter-spacing: .16em;
+}
+
+.damage-number.destroyed strong {
+  color: #ff9980;
 }
 
 .damage-number.show {
   animation: damage-pop .7s ease-out;
+}
+
+.damage-number.destroyed.show {
+  animation: part-break-pop 1.45s ease-out;
 }
 
 .monster-title {
@@ -1323,15 +1359,34 @@ h1 span {
 @keyframes damage-pop {
   0% {
     opacity: 0;
-    transform: translateY(15px) scale(.7);
+    transform: translate(-50%, calc(-50% + 15px)) scale(.7);
   }
   25% {
     opacity: 1;
-    transform: translateY(0) scale(1.15);
+    transform: translate(-50%, -50%) scale(1.15);
   }
   100% {
     opacity: 0;
-    transform: translateY(-45px) scale(1);
+    transform: translate(-50%, calc(-50% - 45px)) scale(1);
+  }
+}
+
+@keyframes part-break-pop {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, calc(-50% + 15px)) scale(.7);
+  }
+  16% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.18);
+  }
+  72% {
+    opacity: 1;
+    transform: translate(-50%, calc(-50% - 18px)) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, calc(-50% - 42px)) scale(.96);
   }
 }
 
