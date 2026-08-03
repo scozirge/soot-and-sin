@@ -145,6 +145,7 @@ function showComplete() {
   elements.progress.textContent = "本節完成";
   elements.type.textContent = "CHAPTER COMPLETE";
   elements.node.textContent = "第一節完成";
+  elements.title.hidden = false;
   elements.title.textContent = "你走出了黑霧街區";
   elements.text.textContent = "十二個節點已全部完成。帶出的物資與仍然活著的同行者，將影響下一節劇本。";
   elements.feedback.hidden = false;
@@ -164,6 +165,7 @@ else {
   elements.type.textContent = event.type;
   elements.node.textContent = "";
   elements.title.textContent = event.title;
+  elements.title.hidden = node.id === "pain_priest";
   elements.vitals.textContent = `生命 ${session.playerHealth}/${session.maxHealth} · 理智 ${session.sanity ?? 100}/100`;
   renderStage("start");
   elements.continueButton.addEventListener("click", continueStory);

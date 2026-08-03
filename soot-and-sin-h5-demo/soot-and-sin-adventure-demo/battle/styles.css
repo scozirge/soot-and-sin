@@ -504,20 +504,33 @@ h1 span {
   animation-delay: -3s;
 }
 
-.monster-figure {
+.monster-art,
+.monster-figure,
+.damage-overlay {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
-  object-fit: cover;
+}
+
+.monster-art {
   transition: filter .2s, transform .2s;
 }
 
-.monster-figure.hit {
+.monster-figure,
+.damage-overlay {
+  object-fit: cover;
+}
+
+.damage-overlay {
+  pointer-events: none;
+}
+
+.monster-art.hit {
   animation: monster-hit .36s ease-out;
 }
 
-.monster-figure.attack {
+.monster-art.attack {
   transform: translateY(9px) scale(1.04);
 }
 
@@ -1420,11 +1433,11 @@ h1 span {
     height: 385px;
   }
 
-  .monster-figure.hit {
+  .monster-art.hit {
     transform: translateX(9px) rotate(1deg);
   }
 
-  .monster-figure.attack {
+  .monster-art.attack {
     transform: translateY(9px) scale(1.04);
   }
 

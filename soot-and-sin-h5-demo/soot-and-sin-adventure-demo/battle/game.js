@@ -214,7 +214,9 @@ const elements = {
   allyEffect: document.querySelector("#allyEffect"),
   monsterHealthText: document.querySelector("#monsterHealthText"),
   monsterHealthBar: document.querySelector("#monsterHealthBar"),
-  monsterFigure: document.querySelector("#monsterFigure"),
+  monsterArt: document.querySelector("#monsterArt"),
+  destroyedLeftLimb: document.querySelector("#destroyedLeftLimb"),
+  destroyedRightLimb: document.querySelector("#destroyedRightLimb"),
   damageNumber: document.querySelector("#damageNumber"),
   log: document.querySelector("#combatLog"),
   modal: document.querySelector("#modal"),
@@ -790,7 +792,7 @@ function takeActorDamage(target, damage) {
     }
   }
 
-  if (elements.monsterFigure.classList.contains("hit")) {
+  if (elements.monsterArt.classList.contains("hit")) {
     setTimeout(() => animateMonster("attack"), 380);
   } else {
     animateMonster("attack");
@@ -941,6 +943,8 @@ function renderParts() {
   const action = actions.find((item) => item.id === state.selectedAction);
   const choosingAttack = action?.type === "attack";
   const interactive = choosingAttack && !state.playerTask;
+  elements.destroyedLeftLimb.hidden = !state.parts.find((part) => part.id === "left_limb").destroyed;
+  elements.destroyedRightLimb.hidden = !state.parts.find((part) => part.id === "right_limb").destroyed;
   elements.partGrid.classList.toggle("locked", !interactive);
   elements.partOverlays.classList.toggle("locked", !choosingAttack);
   const overlays = [];
@@ -1044,10 +1048,10 @@ function showDamage(value, source = "") {
 }
 
 function animateMonster(className) {
-  elements.monsterFigure.classList.remove("hit", "attack");
-  void elements.monsterFigure.offsetWidth;
-  elements.monsterFigure.classList.add(className);
-  setTimeout(() => elements.monsterFigure.classList.remove(className), 360);
+  elements.monsterArt.classList.remove("hit", "attack");
+  void elements.monsterArt.offsetWidth;
+  elements.monsterArt.classList.add(className);
+  setTimeout(() => elements.monsterArt.classList.remove(className), 360);
 }
 
 function openLoot() {

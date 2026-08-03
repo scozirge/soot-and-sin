@@ -34,6 +34,7 @@ const assert = (condition, message) => {
   assert(["contain", "100%", "100% auto"].includes(layout.backgroundSize), "劇本插圖必須完整顯示");
   assert(layout.sceneWidth > 680 && layout.sceneHeight > 400, "窄畫面插圖尺寸異常");
   assert(layout.scrollTop === 0, "章節節點不應帶動畫面垂直捲動");
+  assert(await page.locator("#storyTitle").isHidden(), "苦痛祭司標題仍然顯示");
   assert(errors.length === 0, `頁面錯誤：${errors.join("；")}`);
 
   await page.screenshot({

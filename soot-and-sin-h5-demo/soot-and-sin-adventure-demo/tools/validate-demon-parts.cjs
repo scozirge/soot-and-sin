@@ -42,6 +42,8 @@ const assert = (condition, message) => {
       destroyedLabel: document.querySelector(".part-callout.destroyed text")?.textContent,
       rightCallout,
       destroyedOverlay: Boolean(document.querySelector('.hit-overlay[data-part="left_limb"].destroyed')),
+      leftDamageLayer: !document.querySelector("#destroyedLeftLimb").hidden,
+      rightDamageLayer: !document.querySelector("#destroyedRightLimb").hidden,
       leaksDurability: document.querySelector("#partCallouts").textContent.includes("部位："),
     };
   });
@@ -49,8 +51,24 @@ const assert = (condition, message) => {
   assert(armResult.monsterHealth === 36, "部位傷害沒有同步扣除怪物生命");
   assert(armResult.currentAction !== "frenzy" && !armResult.available.includes("frenzy"), "單手破壞後仍可使用狂抓");
   assert(armResult.destroyedLabel?.includes("已破壞") && armResult.destroyedOverlay, "破壞部位沒有清楚標示");
+  assert(armResult.leftDamageLayer && !armResult.rightDamageLayer, "單手破壞圖層顯示錯誤");
   assert(!armResult.rightCallout.includes("已破壞"), "指向右手時不應同時顯示左手破壞標示");
   assert(!armResult.leaksDurability, "介面不應顯示隱藏的部位耐久");
+
+  const bothArms = await page.evaluate(() => {
+    const right = state.parts.find((part) => part.id === "right_limb");
+    applyPartDamage(right, right.durability);
+    updateView();
+    animateMonster("hit");
+    return {
+      leftDamageLayer: !document.querySelector("#destroyedLeftLimb").hidden,
+      rightDamageLayer: !document.querySelector("#destroyedRightLimb").hidden,
+      imageLayers: document.querySelectorAll("#monsterArt > img").length,
+      sharedHitAnimation: document.querySelector("#monsterArt").classList.contains("hit"),
+    };
+  });
+  assert(bothArms.leftDamageLayer && bothArms.rightDamageLayer, "雙手破壞圖層無法同時疊加");
+  assert(bothArms.imageLayers === 3 && bothArms.sharedHitAnimation, "三張怪物圖沒有共用受擊放大動畫");
   await page.screenshot({ path: path.resolve(__dirname, "../preview-demon-part-break.png"), fullPage: true });
 
   const headResult = await page.evaluate(() => {

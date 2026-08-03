@@ -93,7 +93,13 @@
           <div class="fog fog-a"></div>
           <div class="fog fog-b"></div>
           <div class="monster-canvas">
-            <img id="monsterFigure" class="monster-figure" src="assets/soot-hound.webp" alt="惡魔">
+            <div id="monsterArt" class="monster-art">
+              <img class="monster-figure" src="assets/soot-hound.webp" alt="惡魔">
+              <img id="destroyedLeftLimb" class="damage-overlay"
+                src="assets/damage-overlays/soot-hound-left_limb-destroyed.png" alt="" hidden>
+              <img id="destroyedRightLimb" class="damage-overlay"
+                src="assets/damage-overlays/soot-hound-right_limb-destroyed.png" alt="" hidden>
+            </div>
             <div id="partOverlays" class="hit-overlay-layer" aria-hidden="true"></div>
             <svg id="partCallouts" class="part-callout-layer" viewBox="0 0 820 900"
               aria-hidden="true"></svg>

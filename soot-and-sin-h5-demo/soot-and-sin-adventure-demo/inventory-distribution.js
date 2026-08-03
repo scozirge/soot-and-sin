@@ -15,6 +15,7 @@ window.InventoryDistribution = (() => {
   function cloneShape(shape) { return shape.map((row) => [...row]); }
   function widthOf(shape) { return shape[0].length; }
   function heightOf(shape) { return shape.length; }
+  function stackId(item) { return item.id === "meat" ? "monster_meat" : item.id; }
   function rotateShape(shape) {
     return shape[0].map((_, column) => shape.map((row) => row[column]).reverse());
   }
@@ -117,7 +118,7 @@ window.InventoryDistribution = (() => {
       }
       const collisions = overlaps(model, x, y, shape);
       if (!collisions.length) return { valid: true, stack: null };
-      const stack = collisions.length === 1 && collisions[0].source.id === model.source.id ? collisions[0] : null;
+      const stack = collisions.length === 1 && stackId(collisions[0].source) === stackId(model.source) ? collisions[0] : null;
       return { valid: Boolean(stack), stack };
     }
 

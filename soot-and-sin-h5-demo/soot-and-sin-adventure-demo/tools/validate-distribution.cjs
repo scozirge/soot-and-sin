@@ -92,6 +92,10 @@ async function dragTo(page, sourceSelector, targetSelector) {
     adventure.pendingLoot = [
       { id: "medical_alcohol", instanceId: "pending-spirit", name: "醫療酒精", category: "medical", quantity: 1, stat: "醫療 · 戰鬥中可用" },
     ];
+    adventure.inventory.push({
+      id: "monster_meat", name: "怪物肉", category: "food", quantity: 1,
+      heal: 24, usableIn: ["rest"], rarity: "uncommon", stat: "食物 · 休息時恢復 24 生命",
+    });
     AdventureState.save(adventure);
     document.querySelectorAll(".modal").forEach((modal) => modal.classList.remove("open"));
     openLoot();
@@ -115,8 +119,10 @@ async function dragTo(page, sourceSelector, targetSelector) {
   }));
   assert(battlePlayerClaim.winner === "player", "戰鬥物資沒有在放入背包時立即歸屬玩家");
   assert(battlePlayerClaim.allyCannotSteal, "隊友仍能搶走玩家已取得的戰鬥物資");
-  assert(await battle.page.evaluate(() => lootDistributionUi.claimByAlly("meat")), "隊友無法取得怪物戰利品");
-  assert(await battle.page.evaluate(() => state.lootResults.meat) === "ally", "怪物戰利品的隊友歸屬錯誤");
+  await dragTo(battle.page, '.claim-public-tray [data-ui-id^="public_meat"]', '.claim-board [data-ui-id="bag_monster_meat_2"]');
+  assert(await battle.page.locator('.claim-board [data-ui-id="bag_monster_meat_2"] > b').textContent() === "×2", "新怪物肉無法堆疊到既有怪物肉");
+  assert(await battle.page.evaluate(() => lootDistributionUi.claimByAlly("claw")), "隊友無法取得怪物戰利品");
+  assert(await battle.page.evaluate(() => state.lootResults.claw) === "ally", "怪物戰利品的隊友歸屬錯誤");
   await dragTo(battle.page, '.claim-board [data-ui-id="bag_canned_food_1"]', ".claim-public-tray");
   assert(await battle.page.locator('.claim-public-tray [data-ui-id="bag_canned_food_1"]').count() === 1, "戰鬥分配時無法把自有物資放入公共區");
   assert(await battle.page.evaluate(() => lootDistributionUi.claimByAlly("inventory_canned_food_1")), "隊友無法拿取玩家投入的戰鬥分配物資");
@@ -127,6 +133,7 @@ async function dragTo(page, sourceSelector, targetSelector) {
   await battle.page.waitForURL(/index\.html$/);
   const battleInventorySaved = await battle.page.evaluate(() => AdventureState.load().inventory);
   assert(!battleInventorySaved.some((item) => item.id === "canned_food"), "戰鬥分配中交給隊友的自有物資沒有從存檔移除");
+  assert(battleInventorySaved.find((item) => item.id === "monster_meat")?.quantity === 2, "怪物肉堆疊結果沒有保留到背包");
   assert(battle.errors.length === 0, `戰鬥頁錯誤：${battle.errors.join("、")}`);
 
   console.log(JSON.stringify({ ok: true, searchPlayerClaim, battlePlayerClaim }, null, 2));
