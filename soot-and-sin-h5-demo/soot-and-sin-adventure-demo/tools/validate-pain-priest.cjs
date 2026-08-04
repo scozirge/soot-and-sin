@@ -66,11 +66,51 @@ function readDamageStats(part) {
 
 function readHitStats(part) {
   const root = path.resolve(__dirname, "../battle/assets/hit-overlays");
-  return readMaskedLayerStats(
-    path.join(root, `pain-priest-${part}.png`),
-    path.join(root, `pain-priest-${part}-mask.png`),
-    part,
-  );
+  const layerFile = path.join(root, `pain-priest-${part}.png`);
+  const maskFile = path.join(root, `pain-priest-${part}-mask.png`);
+  const stats = readMaskedLayerStats(layerFile, maskFile, part);
+  const layer = PNG.sync.read(fs.readFileSync(layerFile));
+  const mask = PNG.sync.read(fs.readFileSync(maskFile));
+  const base = PNG.sync.read(fs.readFileSync(path.resolve(root, "../pain-priest.png")));
+  const deltas = [];
+  let count = 0;
+  let baseLumaSum = 0;
+  let resultLumaSum = 0;
+  let baseLumaSquared = 0;
+  let resultLumaSquared = 0;
+  let lumaProducts = 0;
+  for (let pixel = 0; pixel < layer.width * layer.height; pixel += 1) {
+    const offset = pixel * 4;
+    const alphaByte = mask.data[offset];
+    if (alphaByte < 64) continue;
+    const alpha = alphaByte / 255;
+    const result = [0, 1, 2].map((channel) => (
+      layer.data[offset + channel] * alpha + base.data[offset + channel] * (1 - alpha)
+    ));
+    const delta = Math.sqrt(result.reduce((sum, value, channel) => (
+      sum + (value - base.data[offset + channel]) ** 2
+    ), 0));
+    deltas.push(delta);
+    const baseLuma = base.data[offset] * .2126 + base.data[offset + 1] * .7152
+      + base.data[offset + 2] * .0722;
+    const resultLuma = result[0] * .2126 + result[1] * .7152 + result[2] * .0722;
+    count += 1;
+    baseLumaSum += baseLuma;
+    resultLumaSum += resultLuma;
+    baseLumaSquared += baseLuma ** 2;
+    resultLumaSquared += resultLuma ** 2;
+    lumaProducts += baseLuma * resultLuma;
+  }
+  deltas.sort((a, b) => a - b);
+  const covariance = lumaProducts - baseLumaSum * resultLumaSum / count;
+  const baseVariance = baseLumaSquared - baseLumaSum ** 2 / count;
+  const resultVariance = resultLumaSquared - resultLumaSum ** 2 / count;
+  return {
+    ...stats,
+    meanColorDelta: deltas.reduce((sum, value) => sum + value, 0) / deltas.length,
+    p10ColorDelta: deltas[Math.floor(deltas.length * .1)],
+    textureCorrelation: covariance / Math.sqrt(baseVariance * resultVariance),
+  };
 }
 
 (async () => {
@@ -123,11 +163,28 @@ function readHitStats(part) {
         clipped: layer.classList.contains("clipped") || Boolean(layer.style.clipPath),
         size: [layer.naturalWidth, layer.naturalHeight],
       })),
+    hitZoneBounds: [...document.querySelectorAll("#partGrid .hit-zone")]
+      .map((zone) => {
+        const bounds = zone.getBBox();
+        return {
+          part: zone.dataset.part,
+          x: bounds.x,
+          y: bounds.y,
+          width: bounds.width,
+          height: bounds.height,
+        };
+      }),
     calloutOverflow: getComputedStyle(elements.partCallouts).overflow,
     shortcuts: partKeys,
   }));
   const alphaStats = ["right_hand", "left_hand", "legs"].map(readDamageStats);
   const hitStats = ["head", "right_hand", "left_hand", "legs"].map(readHitStats);
+  const anatomyBounds = {
+    head: { minX: 400, minY: 210, maxX: 665, maxY: 535 },
+    right_hand: { minX: 230, minY: 125, maxX: 380, maxY: 300 },
+    left_hand: { minX: 575, minY: 585, maxX: 790, maxY: 775 },
+    legs: { minX: 455, minY: 1295, maxX: 585, maxY: 1545 },
+  };
   assert(setup.isPainPriestEncounter && setup.encounterName === "苦痛祭司", "劇本節點沒有載入苦痛祭司遭遇");
   assert(setup.art.endsWith("assets/pain-priest.png"), "苦痛祭司沒有使用選定的第一張圖");
   assert(setup.naturalSize.join("x") === "957x1643" && setup.viewBox === "0 0 957 1643",
@@ -166,6 +223,26 @@ function readHitStats(part) {
     && layer.transparent > layer.visible && layer.corners.every((alpha) => alpha === 0)
     && layer.alphaMismatch === 0 && layer.occupancy < .8),
   "命中高亮必須逐像素套用 2 倍解析 GrabCut 遮罩，不可退化成矩形色塊");
+  assert(hitStats.every((layer) => layer.bounds.minX >= anatomyBounds[layer.part].minX
+    && layer.bounds.minY >= anatomyBounds[layer.part].minY
+    && layer.bounds.maxX <= anatomyBounds[layer.part].maxX
+    && layer.bounds.maxY <= anatomyBounds[layer.part].maxY),
+  "命中高亮只能涵蓋設定的解剖部位，不得染到衣袖、裙擺、前臂、武器或背景");
+  assert(hitStats.every((layer) => layer.meanColorDelta >= 55
+    && layer.p10ColorDelta >= 35 && layer.textureCorrelation >= .8),
+  "選取色在暗背景中必須明顯可辨，且需保留原部位明暗與材質");
+  assert(setup.hitZoneBounds.every((zone) => {
+    const limits = anatomyBounds[zone.part];
+    const maskBounds = hitStats.find((layer) => layer.part === zone.part).bounds;
+    const maskArea = (maskBounds.maxX - maskBounds.minX + 1)
+      * (maskBounds.maxY - maskBounds.minY + 1);
+    return zone.x >= limits.minX && zone.y >= limits.minY
+      && zone.x + zone.width <= limits.maxX && zone.y + zone.height <= limits.maxY
+      && zone.x <= maskBounds.minX + 16 && zone.y <= maskBounds.minY + 16
+      && zone.x + zone.width >= maskBounds.maxX - 16
+      && zone.y + zone.height >= maskBounds.maxY - 16
+      && zone.width * zone.height / maskArea < 1.6;
+  }), "SVG 點擊區必須緊貼同一解剖部位，不得仍使用舊的整條肢體範圍");
   assert(setup.shortcuts.legs === "R", "第四部位沒有配置快捷鍵");
 
   const overlaps = (a, b) => !(a.maxX < b.minX || b.maxX < a.minX
@@ -237,6 +314,7 @@ function readHitStats(part) {
         restingArt,
         art: rectOf(elements.monsterArt),
         overlay: rectOf(overlay),
+        selectedFilter: getComputedStyle(overlay).filter,
         callouts: rectOf(elements.partCallouts),
         zones: rectOf(elements.partGrid),
         transforms: [
@@ -264,6 +342,9 @@ function readHitStats(part) {
     .every((rect) => sameRect(check.art, rect))
     && check.art.width > check.restingArt.width
     && check.art.height > check.restingArt.height
+    && check.selectedFilter.includes("brightness(1.35)")
+    && check.selectedFilter.includes("saturate(1.6)")
+    && !check.selectedFilter.includes("drop-shadow")
     && new Set(check.transforms).size === 1
     && !check.transforms[0].startsWith("matrix(1, 0, 0, 1,")
     && new Set(check.origins).size === 1),

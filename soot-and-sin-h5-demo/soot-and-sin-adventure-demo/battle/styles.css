@@ -576,7 +576,8 @@ h1 span {
   height: 100%;
   object-fit: cover;
   opacity: 0;
-  transition: opacity .14s ease;
+  filter: brightness(1.15) saturate(1.25);
+  transition: opacity .14s ease, filter .14s ease;
 }
 
 .hit-overlay-layer:not(.locked) .hit-overlay {
@@ -584,11 +585,13 @@ h1 span {
 }
 
 .hit-overlay-layer:not(.locked) .hit-overlay.hovered {
-  opacity: .72;
+  opacity: .82;
+  filter: brightness(1.25) saturate(1.45);
 }
 
 .hit-overlay-layer:not(.locked) .hit-overlay.selected {
   opacity: 1;
+  filter: brightness(1.35) saturate(1.6);
 }
 
 .hit-overlay-layer.locked .hit-overlay {
