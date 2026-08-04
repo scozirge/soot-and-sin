@@ -513,7 +513,11 @@ h1 span {
   height: 100%;
 }
 
-.monster-art {
+.monster-art,
+.hit-overlay-layer,
+.part-callout-layer,
+.hit-zone-layer {
+  transform-origin: 50% 50%;
   transition: filter .2s, transform .2s;
 }
 
@@ -537,11 +541,17 @@ h1 span {
   mix-blend-mode: screen;
 }
 
-.monster-art.hit {
+.monster-art.hit,
+.monster-art.hit ~ .hit-overlay-layer,
+.monster-art.hit ~ .part-callout-layer,
+.monster-art.hit ~ .hit-zone-layer {
   animation: monster-hit .36s ease-out;
 }
 
-.monster-art.attack {
+.monster-art.attack,
+.monster-art.attack ~ .hit-overlay-layer,
+.monster-art.attack ~ .part-callout-layer,
+.monster-art.attack ~ .hit-zone-layer {
   transform: translateY(9px) scale(1.04);
 }
 
@@ -587,8 +597,9 @@ h1 span {
 
 .hit-overlay.destroyed,
 .hit-overlay-layer.locked .hit-overlay.destroyed {
-  opacity: .48;
-  filter: grayscale(1) sepia(1) saturate(3) brightness(.42) hue-rotate(325deg);
+  opacity: 0 !important;
+  filter: none;
+  transition: none;
 }
 
 .part-callout-layer {
@@ -1493,11 +1504,17 @@ h1 span {
     height: 385px;
   }
 
-  .monster-art.hit {
+  .monster-art.hit,
+  .monster-art.hit ~ .hit-overlay-layer,
+  .monster-art.hit ~ .part-callout-layer,
+  .monster-art.hit ~ .hit-zone-layer {
     transform: translateX(9px) rotate(1deg);
   }
 
-  .monster-art.attack {
+  .monster-art.attack,
+  .monster-art.attack ~ .hit-overlay-layer,
+  .monster-art.attack ~ .part-callout-layer,
+  .monster-art.attack ~ .hit-zone-layer {
     transform: translateY(9px) scale(1.04);
   }
 

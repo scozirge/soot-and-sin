@@ -44,6 +44,9 @@ const assert = (condition, message) => {
       destroyedLabel: document.querySelector(".part-callout.destroyed text")?.textContent,
       rightCallout,
       destroyedOverlay: Boolean(document.querySelector('.hit-overlay[data-part="left_limb"].destroyed')),
+      destroyedOverlayOpacity: getComputedStyle(
+        document.querySelector('.hit-overlay[data-part="left_limb"].destroyed'),
+      ).opacity,
       leftDamageLayer: document.querySelector("#destroyedLeftLimb").classList.contains("visible"),
       rightDamageLayer: document.querySelector("#destroyedRightLimb").classList.contains("visible"),
       breakFeedback: document.querySelector("#damageNumber").textContent,
@@ -55,7 +58,8 @@ const assert = (condition, message) => {
   assert(armResult.durability === 54 && armResult.destroyed, "左右手應在怪物生命 60% 傷害時破壞");
   assert(armResult.monsterHealth === 36, "部位傷害沒有同步扣除怪物生命");
   assert(armResult.currentAction !== "frenzy" && !armResult.available.includes("frenzy"), "單手破壞後仍可使用狂抓");
-  assert(armResult.destroyedLabel?.includes("已破壞") && armResult.destroyedOverlay, "破壞部位沒有清楚標示");
+  assert(armResult.destroyedLabel?.includes("已破壞") && armResult.destroyedOverlay
+    && armResult.destroyedOverlayOpacity === "0", "破壞部位沒有清楚標示，或命中高亮仍半透明殘留");
   assert(armResult.leftDamageLayer && !armResult.rightDamageLayer, "單手破壞圖層顯示錯誤");
   assert(armResult.breakFeedback.includes("部位破壞") && armResult.feedbackX === "22%", "破壞提示沒有顯示在受擊部位");
   assert(parseFloat(armResult.feedbackFontSize) <= 24.1, "傷害跳字沒有縮小 30%");

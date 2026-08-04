@@ -205,6 +205,71 @@ function readHitStats(part) {
   assert(calloutChecks.every((check) => !check.overlapsIntent),
     "部位提示不可與敵方意圖卡重疊");
 
+  const measureAttackAlignment = async (viewport) => {
+    await page.setViewportSize(viewport);
+    return page.evaluate(async () => {
+      resetState();
+      state.active = true;
+      state.selectedAction = actions.find((action) => action.type === "attack").id;
+      state.selectedPart = "right_hand";
+      state.parts.forEach((part) => { part.revealed = true; });
+      elements.modal.classList.remove("open");
+      renderParts();
+      updateView();
+      const rectOf = (element) => {
+        const rect = element.getBoundingClientRect();
+        return {
+          left: rect.left,
+          top: rect.top,
+          width: rect.width,
+          height: rect.height,
+          centerX: rect.left + rect.width / 2,
+          centerY: rect.top + rect.height / 2,
+        };
+      };
+      const restingArt = rectOf(elements.monsterArt);
+      animateMonster("attack");
+      await new Promise((resolve) => setTimeout(resolve, 100));
+
+      const overlay = document.querySelector('[data-part="right_hand"].hit-overlay');
+      return {
+        viewport: [innerWidth, innerHeight],
+        restingArt,
+        art: rectOf(elements.monsterArt),
+        overlay: rectOf(overlay),
+        callouts: rectOf(elements.partCallouts),
+        zones: rectOf(elements.partGrid),
+        transforms: [
+          getComputedStyle(elements.monsterArt).transform,
+          getComputedStyle(elements.partOverlays).transform,
+          getComputedStyle(elements.partCallouts).transform,
+          getComputedStyle(elements.partGrid).transform,
+        ],
+        origins: [
+          getComputedStyle(elements.monsterArt).transformOrigin,
+          getComputedStyle(elements.partOverlays).transformOrigin,
+          getComputedStyle(elements.partCallouts).transformOrigin,
+          getComputedStyle(elements.partGrid).transformOrigin,
+        ],
+      };
+    });
+  };
+  const attackAlignment = [
+    await measureAttackAlignment({ width: 1600, height: 1050 }),
+    await measureAttackAlignment({ width: 430, height: 932 }),
+  ];
+  const sameRect = (a, b) => ["left", "top", "width", "height", "centerX", "centerY"]
+    .every((key) => Math.abs(a[key] - b[key]) < .25);
+  assert(attackAlignment.every((check) => [check.overlay, check.callouts, check.zones]
+    .every((rect) => sameRect(check.art, rect))
+    && check.art.width > check.restingArt.width
+    && check.art.height > check.restingArt.height
+    && new Set(check.transforms).size === 1
+    && !check.transforms[0].startsWith("matrix(1, 0, 0, 1,")
+    && new Set(check.origins).size === 1),
+  "怪物攻擊放大時，本體、部位圖、提示與命中區必須使用相同中心點和 transform");
+  await page.setViewportSize({ width: 1600, height: 1050 });
+
   const mechanics = await page.evaluate(() => {
     const prepareAction = (id, now) => {
       state.active = true;
@@ -228,6 +293,9 @@ function readHitStats(part) {
       available: monsterActions.filter(canMonsterUseAction).map((action) => action.id),
       current: state.currentMonsterAction.id,
       layerVisible: document.querySelector('[data-part="right_hand"].damage-overlay').classList.contains("visible"),
+      hitOverlayOpacity: getComputedStyle(
+        document.querySelector('[data-part="right_hand"].hit-overlay'),
+      ).opacity,
     };
 
     resetState();
@@ -293,7 +361,8 @@ function readHitStats(part) {
 
   assert(!mechanics.rightResult.available.includes("stab") && mechanics.rightResult.current !== "stab",
     "右手破壞後仍可使用刺擊");
-  assert(mechanics.rightResult.layerVisible, "右手破壞圖層沒有顯示");
+  assert(mechanics.rightResult.layerVisible && mechanics.rightResult.hitOverlayOpacity === "0",
+    "右手破壞圖應顯示，但原命中高亮不得半透明殘留");
   assert(!mechanics.leftResult.available.includes("claw") && mechanics.leftResult.current !== "claw"
     && mechanics.leftResult.layerVisible,
     "左手破壞後仍可使用爪擊");
@@ -356,6 +425,23 @@ function readHitStats(part) {
   for (const part of ["head", "right_hand", "left_hand", "legs"]) {
     await captureHitState(`desktop-hit-${part}`, part, { width: 1600, height: 1050 });
   }
+  const captureAttackAlignment = async (name, viewport) => {
+    await page.setViewportSize(viewport);
+    await page.evaluate(() => {
+      resetState();
+      state.active = true;
+      state.selectedAction = actions.find((action) => action.type === "attack").id;
+      state.selectedPart = "right_hand";
+      state.parts.forEach((part) => { part.revealed = true; });
+      elements.modal.classList.remove("open");
+      renderParts();
+      updateView();
+      animateMonster("attack");
+    });
+    await page.waitForTimeout(100);
+    await page.screenshot({ path: path.join(screenshotDir, `${name}.png`), fullPage: true });
+  };
+  await captureAttackAlignment("desktop-attack-alignment", { width: 1600, height: 1050 });
   await page.evaluate(() => {
     resetState();
     state.active = true;
@@ -381,6 +467,7 @@ function readHitStats(part) {
   for (const part of ["head", "right_hand", "left_hand", "legs"]) {
     await captureHitState(`mobile-hit-${part}`, part, { width: 430, height: 932 });
   }
+  await captureAttackAlignment("mobile-attack-alignment", { width: 430, height: 932 });
   await page.evaluate(() => {
     state.playerHealth = 61;
     finishAdventureCombat();
@@ -406,6 +493,7 @@ function readHitStats(part) {
     alphaStats,
     hitStats,
     calloutChecks,
+    attackAlignment,
     mechanics,
     stackedLayers,
     routeResult,
