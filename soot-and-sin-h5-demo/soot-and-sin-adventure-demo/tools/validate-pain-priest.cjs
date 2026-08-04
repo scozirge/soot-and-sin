@@ -180,11 +180,45 @@ function readHitStats(part) {
   const alphaStats = ["right_hand", "left_hand", "legs"].map(readDamageStats);
   const hitStats = ["head", "right_hand", "left_hand", "legs"].map(readHitStats);
   const anatomyBounds = {
-    head: { minX: 400, minY: 210, maxX: 665, maxY: 535 },
-    right_hand: { minX: 230, minY: 125, maxX: 380, maxY: 300 },
-    left_hand: { minX: 575, minY: 585, maxX: 790, maxY: 775 },
-    legs: { minX: 455, minY: 1295, maxX: 585, maxY: 1545 },
+    head: { minX: 425, minY: 270, maxX: 635, maxY: 470 },
+    right_hand: { minX: 252, minY: 145, maxX: 375, maxY: 270 },
+    left_hand: { minX: 585, minY: 607, maxX: 750, maxY: 748 },
+    legs: { minX: 448, minY: 1312, maxX: 570, maxY: 1505 },
   };
+  const maskImages = Object.fromEntries(["head", "right_hand", "left_hand", "legs"].map((part) => [
+    part,
+    PNG.sync.read(fs.readFileSync(path.resolve(
+      __dirname, `../battle/assets/hit-overlays/pain-priest-${part}-mask.png`,
+    ))),
+  ]));
+  const hitAlphaAt = (part, x, y) => {
+    const image = maskImages[part];
+    return image.data[(y * image.width + x) * 4];
+  };
+  const forbiddenHitPixels = {
+    head: [[470, 250], [535, 490], [465, 500], [615, 395]],
+    right_hand: [[250, 282], [340, 250], [340, 270], [336, 230]],
+    left_hand: [[650, 605], [670, 610], [700, 610], [755, 740]],
+    legs: [[520, 1510], [500, 1520], [550, 1520], [480, 1510]],
+  };
+  const requiredHitPixels = {
+    head: [[535, 300], [500, 365], [530, 445], [438, 310], [625, 315]],
+    right_hand: [[315, 180], [300, 220], [280, 245]],
+    left_hand: [[650, 625], [680, 660], [600, 705], [710, 710], [735, 690]],
+    legs: [[520, 1350], [520, 1400], [480, 1485], [530, 1490]],
+  };
+  const hitZonePixelChecks = await page.evaluate(({ forbidden, required }) => {
+    const contains = (part, [x, y]) => {
+      const zone = document.querySelector(`#partGrid .hit-zone[data-part="${part}"]`);
+      return zone.isPointInFill(new DOMPoint(x, y));
+    };
+    return {
+      forbidden: Object.entries(forbidden).every(([part, points]) =>
+        points.every((point) => !contains(part, point))),
+      required: Object.entries(required).every(([part, points]) =>
+        points.every((point) => contains(part, point))),
+    };
+  }, { forbidden: forbiddenHitPixels, required: requiredHitPixels });
   assert(setup.isPainPriestEncounter && setup.encounterName === "苦痛祭司", "劇本節點沒有載入苦痛祭司遭遇");
   assert(setup.art.endsWith("assets/pain-priest.png"), "苦痛祭司沒有使用選定的第一張圖");
   assert(setup.naturalSize.join("x") === "957x1643" && setup.viewBox === "0 0 957 1643",
@@ -222,7 +256,7 @@ function readHitStats(part) {
     && layer.visible < layer.size[0] * layer.size[1] * .2
     && layer.transparent > layer.visible && layer.corners.every((alpha) => alpha === 0)
     && layer.alphaMismatch === 0 && layer.occupancy < .8),
-  "命中高亮必須逐像素套用 2 倍解析 GrabCut 遮罩，不可退化成矩形色塊");
+  "命中高亮必須逐像素套用精細 Alpha 遮罩，不可退化成矩形色塊");
   assert(hitStats.every((layer) => layer.bounds.minX >= anatomyBounds[layer.part].minX
     && layer.bounds.minY >= anatomyBounds[layer.part].minY
     && layer.bounds.maxX <= anatomyBounds[layer.part].maxX
@@ -231,6 +265,14 @@ function readHitStats(part) {
   assert(hitStats.every((layer) => layer.meanColorDelta >= 55
     && layer.p10ColorDelta >= 35 && layer.textureCorrelation >= .8),
   "選取色在暗背景中必須明顯可辨，且需保留原部位明暗與材質");
+  assert(Object.entries(forbiddenHitPixels).every(([part, points]) =>
+    points.every(([x, y]) => hitAlphaAt(part, x, y) === 0)),
+  "頭髮／頸部、刀身、袖口或腳下陰影仍被誤算進高亮遮罩");
+  assert(Object.entries(requiredHitPixels).every(([part, points]) =>
+    points.every(([x, y]) => hitAlphaAt(part, x, y) >= 64)),
+  "精確遮罩修正時遺漏了應高亮的臉、手指、手掌、腳背或腳趾");
+  assert(hitZonePixelChecks.forbidden && hitZonePixelChecks.required,
+  "SVG 點擊區仍包含頸部、刀身、袖口或地面，或漏掉實際可攻擊部位");
   assert(setup.hitZoneBounds.every((zone) => {
     const limits = anatomyBounds[zone.part];
     const maskBounds = hitStats.find((layer) => layer.part === zone.part).bounds;
