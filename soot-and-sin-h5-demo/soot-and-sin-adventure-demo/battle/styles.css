@@ -593,7 +593,7 @@ h1 span {
 
 .part-callout-layer {
   z-index: 4;
-  overflow: visible;
+  overflow: hidden;
   pointer-events: none;
 }
 

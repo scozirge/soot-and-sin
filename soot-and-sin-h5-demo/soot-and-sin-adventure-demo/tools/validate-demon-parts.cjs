@@ -1,6 +1,7 @@
 const { chromium } = require("playwright");
 const { pathToFileURL } = require("url");
 const path = require("path");
+const os = require("os");
 
 const assert = (condition, message) => {
   if (!condition) throw new Error(message);
@@ -79,7 +80,7 @@ const assert = (condition, message) => {
   assert(bothArms.imageLayers === 3 && bothArms.sharedHitAnimation, "三張怪物圖沒有共用受擊放大動畫");
   assert(bothArms.rightBreakFeedback.includes("部位破壞"), "右手破壞沒有顯示明顯提示");
   await page.waitForTimeout(550);
-  await page.screenshot({ path: path.resolve(__dirname, "../preview-demon-part-break.png"), fullPage: true });
+  await page.screenshot({ path: path.join(os.tmpdir(), "soot-and-sin-demon-part-break.png"), fullPage: true });
 
   const headResult = await page.evaluate(() => {
     resetState();

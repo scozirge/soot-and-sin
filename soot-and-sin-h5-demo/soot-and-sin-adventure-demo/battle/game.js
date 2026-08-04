@@ -18,6 +18,7 @@ const encounter = isPainPriestEncounter
       calloutFontSize: "58px",
       calloutStroke: "6px",
       calloutLineHeight: 68,
+      calloutSafePadding: 24,
       intro: "你與 Morrow 在房間牆角遭到苦痛祭司襲擊。",
     }
   : {
@@ -30,6 +31,7 @@ const encounter = isPainPriestEncounter
       calloutFontSize: "35px",
       calloutStroke: "4px",
       calloutLineHeight: 42,
+      calloutSafePadding: 24,
       intro: "你與 Morrow 對上惡魔。",
     };
 const MONSTER_MAX_HEALTH = encounter.maxHealth;
@@ -195,28 +197,23 @@ const regions = isPainPriestEncounter
       {
         id: "head", name: "頭", accuracy: 55, multiplier: 200, durabilityPercent: 50,
         stunSeconds: 2, lethal: true,
-        damageImage: "assets/damage-overlays/pain-priest-head-destroyed.png",
-        damageClip: "polygon(37% 12%, 69% 12%, 70% 34%, 36% 34%)",
-        hitOverlayClip: "polygon(38% 14%, 67% 14%, 68% 33%, 37% 33%)",
+        hitOverlayImage: "assets/hit-overlays/pain-priest-head.png",
       },
       {
         id: "right_hand", name: "右手（持刀）", accuracy: 72, multiplier: 145, durabilityPercent: 40,
         damageImage: "assets/damage-overlays/pain-priest-right_hand-destroyed.png",
-        damageClip: "polygon(7% 5%, 43% 5%, 43% 39%, 8% 39%)",
-        hitOverlayClip: "polygon(9% 7%, 41% 7%, 40% 38%, 10% 38%)",
+        hitOverlayImage: "assets/hit-overlays/pain-priest-right_hand.png",
       },
       {
         id: "left_hand", name: "左手", accuracy: 78, multiplier: 135, durabilityPercent: 40,
         damageImage: "assets/damage-overlays/pain-priest-left_hand-destroyed.png",
-        damageClip: "polygon(57% 28%, 86% 28%, 86% 55%, 56% 55%)",
-        hitOverlayClip: "polygon(58% 29%, 84% 29%, 84% 54%, 57% 54%)",
+        hitOverlayImage: "assets/hit-overlays/pain-priest-left_hand.png",
       },
       {
         id: "legs", name: "雙腿", accuracy: 86, multiplier: 120, durabilityPercent: 30,
         speedMultiplier: .7,
         damageImage: "assets/damage-overlays/pain-priest-legs-destroyed.png",
-        damageClip: "polygon(22% 42%, 76% 42%, 78% 94%, 20% 94%)",
-        hitOverlayClip: "polygon(25% 43%, 73% 43%, 75% 92%, 22% 92%)",
+        hitOverlayImage: "assets/hit-overlays/pain-priest-legs.png",
       },
     ]
   : [
@@ -230,14 +227,12 @@ const regions = isPainPriestEncounter
         hitOverlayImage: "assets/hit-overlays/soot-hound-left_limb.png",
         damageImage: "assets/damage-overlays/soot-hound-left_limb-destroyed.png",
         damageElementId: "destroyedLeftLimb",
-        damageClip: "polygon(0 22%, 45% 22%, 45% 100%, 0 100%)",
       },
       {
         id: "right_limb", name: "右側前肢", accuracy: 85, multiplier: 140, durabilityPercent: 60,
         hitOverlayImage: "assets/hit-overlays/soot-hound-right_limb.png",
         damageImage: "assets/damage-overlays/soot-hound-right_limb-destroyed.png",
         damageElementId: "destroyedRightLimb",
-        damageClip: "polygon(52% 20%, 100% 20%, 100% 100%, 52% 100%)",
       },
     ];
 
@@ -260,10 +255,10 @@ const hitZonePaths = isPainPriestEncounter
 
 const calloutLayouts = isPainPriestEncounter
   ? {
-      head: { path: "M535 350L700 190H952", anchor: [535, 350], x: 690, y: 116 },
-      right_hand: { path: "M252 270L115 170H5", anchor: [252, 270], x: 16, y: 98 },
-      left_hand: { path: "M687 628L820 545H952", anchor: [687, 628], x: 775, y: 465 },
-      legs: { path: "M485 1130L215 1060H5", anchor: [485, 1130], x: 16, y: 980 },
+      head: { path: "M535 350L650 450H920", anchor: [535, 350], x: 650, y: 350 },
+      right_hand: { path: "M285 270L160 400H28", anchor: [285, 270], x: 34, y: 270 },
+      left_hand: { path: "M690 650L790 730H920", anchor: [690, 650], x: 650, y: 600 },
+      legs: { path: "M520 1360L210 1190H28", anchor: [520, 1360], x: 34, y: 1050 },
     }
   : {
       head: { path: "M392 330L540 175H805", anchor: [392, 330], x: 620, y: 108 },
@@ -1111,7 +1106,6 @@ function renderDamageOverlays() {
     layer.alt = "";
     layer.dataset.part = region.id;
     if (region.damageElementId) layer.id = region.damageElementId;
-    if (region.damageClip) layer.style.clipPath = region.damageClip;
     if (part?.destroyed) layer.classList.add("visible");
     elements.monsterArt.append(layer);
   });
@@ -1193,6 +1187,27 @@ function appendPartCallout(part, destroyed) {
     ? `<path d="${layout.path}"></path><circle cx="${layout.anchor[0]}" cy="${layout.anchor[1]}" r="6"></circle><text x="${layout.x}" y="${layout.y}"><tspan x="${layout.x}">${part.name}：已破壞</tspan></text>`
     : `<path d="${layout.path}"></path><circle cx="${layout.anchor[0]}" cy="${layout.anchor[1]}" r="6"></circle><text x="${layout.x}" y="${layout.y}"><tspan x="${layout.x}">命中：${accuracy}</tspan><tspan x="${layout.x}" dy="${encounter.calloutLineHeight}">傷害：${multiplier}</tspan></text>`;
   elements.partCallouts.append(group);
+
+  // Callout copy is dynamic, so use the rendered SVG bounds instead of
+  // assuming that a hand-authored path or text position will always fit.
+  const [viewX, viewY, viewWidth, viewHeight] = elements.partCallouts
+    .getAttribute("viewBox").split(/\s+/).map(Number);
+  const padding = encounter.calloutSafePadding ?? 24;
+  const bounds = group.getBBox();
+  let dx = 0;
+  let dy = 0;
+  if (bounds.x < viewX + padding) dx = viewX + padding - bounds.x;
+  if (bounds.x + bounds.width + dx > viewX + viewWidth - padding) {
+    dx += viewX + viewWidth - padding - (bounds.x + bounds.width + dx);
+  }
+  if (bounds.y < viewY + padding) dy = viewY + padding - bounds.y;
+  if (bounds.y + bounds.height + dy > viewY + viewHeight - padding) {
+    dy += viewY + viewHeight - padding - (bounds.y + bounds.height + dy);
+  }
+  group.dataset.safePadding = String(padding);
+  group.dataset.boundsAdjusted = String(Boolean(dx || dy));
+  group.dataset.bounds = [bounds.x + dx, bounds.y + dy, bounds.width, bounds.height].join(",");
+  if (dx || dy) group.setAttribute("transform", `translate(${dx} ${dy})`);
 }
 
 function updateView(now = performance.now()) {
