@@ -17,17 +17,27 @@ HIT_PARTS = {
         "manual": True,
         "areas": [
             [
-                (491, 282), (511, 276), (535, 278), (558, 285),
+                (498, 286), (515, 279), (535, 278), (558, 285),
                 (576, 300), (588, 321), (596, 349), (598, 374),
                 (592, 399), (583, 422), (571, 441), (553, 457),
                 (535, 465), (517, 462), (500, 453), (484, 439),
                 (471, 421), (461, 400), (454, 377), (453, 354),
-                (457, 332), (465, 312), (476, 295),
+                (459, 337), (470, 317), (485, 298),
             ],
-            [(455, 325), (438, 307), (431, 303), (437, 319),
-             (444, 340), (451, 356), (457, 364), (458, 345)],
+            [(457, 328), (441, 310), (437, 307), (442, 323),
+             (448, 340), (454, 352), (458, 356), (460, 343)],
             [(594, 329), (610, 319), (631, 305), (623, 329),
              (615, 349), (607, 365), (599, 370), (598, 349)],
+        ],
+        "strokes": [
+            ([(535, 295), (535, 445)], 16),
+            ([(475, 355), (590, 355)], 14),
+            ([(490, 410), (575, 410)], 12),
+            ([(443, 315), (453, 345)], 4),
+            ([(625, 314), (605, 354)], 4),
+        ],
+        "background_strokes": [
+            ([(448, 354), (448, 376), (450, 400)], 4),
         ],
     },
     "right_hand": {
@@ -44,6 +54,13 @@ HIT_PARTS = {
         "cutouts": [[
             (333, 207), (346, 207), (346, 274), (332, 274),
         ]],
+        "strokes": [
+            ([(300, 170), (330, 170), (349, 188)], 10),
+            ([(305, 185), (300, 215), (282, 250)], 10),
+        ],
+        "background_strokes": [
+            ([(339, 209), (339, 270)], 7),
+        ],
     },
     "left_hand": {
         "manual": True,
@@ -84,6 +101,17 @@ HIT_PARTS = {
                 (717, 742), (712, 735), (718, 719), (725, 703),
             ],
         ],
+        "strokes": [
+            ([(651, 620), (654, 650)], 5),
+            ([(682, 636), (690, 660)], 5),
+            ([(713, 646), (710, 678)], 5),
+            ([(600, 708), (635, 690), (665, 680)], 5),
+            ([(716, 688), (710, 730)], 5),
+            ([(738, 686), (725, 728)], 5),
+        ],
+        "background_strokes": [
+            ([(650, 606), (690, 610), (710, 620)], 5),
+        ],
     },
     "legs": {
         "manual": True,
@@ -98,6 +126,16 @@ HIT_PARTS = {
             (462, 1454), (467, 1434), (470, 1412), (472, 1388),
             (475, 1361), (478, 1337),
         ]],
+        "strokes": [
+            ([(510, 1330), (518, 1400), (520, 1450)], 12),
+            ([(474, 1480), (490, 1485)], 5),
+            ([(500, 1480), (505, 1490)], 5),
+            ([(520, 1480), (528, 1490)], 5),
+            ([(542, 1475), (552, 1484)], 5),
+        ],
+        "background_strokes": [
+            ([(460, 1505), (520, 1512), (565, 1505)], 6),
+        ],
     },
 }
 
@@ -166,19 +204,65 @@ def remove_small_components(binary, minimum_area=90):
     return cleaned
 
 
-def build_manual_mask(image, spec):
+def draw_local_strokes(mask, strokes, value, offset):
+    offset_x, offset_y = offset
+    for points, thickness in strokes:
+        local = np.array([(
+            (x - offset_x) * SCALE,
+            (y - offset_y) * SCALE,
+        ) for x, y in points], np.int32)
+        cv2.polylines(mask, [local], False, value, thickness * SCALE, cv2.LINE_8)
+
+
+def build_guided_mask(image, spec):
     height, width = image.shape[:2]
-    mask = np.zeros((height * SCALE, width * SCALE), np.uint8)
+    limit = np.zeros((height, width), np.uint8)
     for area in spec["areas"]:
-        cv2.fillPoly(mask, [scaled(area)], 255, lineType=cv2.LINE_AA)
+        cv2.fillPoly(limit, [np.array(area, np.int32)], 255, lineType=cv2.LINE_AA)
     for cutout in spec.get("cutouts", []):
-        cv2.fillPoly(mask, [scaled(cutout)], 0, lineType=cv2.LINE_AA)
-    return cv2.resize(mask, (width, height), interpolation=cv2.INTER_AREA)
+        cv2.fillPoly(limit, [np.array(cutout, np.int32)], 0, lineType=cv2.LINE_AA)
+
+    x, y, crop_width, crop_height = cv2.boundingRect(np.where(limit > 0, 255, 0).astype(np.uint8))
+    padding = 4
+    x0 = max(0, x - padding)
+    y0 = max(0, y - padding)
+    x1 = min(width, x + crop_width + padding)
+    y1 = min(height, y + crop_height + padding)
+    source_crop = image[y0:y1, x0:x1]
+    limit_crop = limit[y0:y1, x0:x1]
+    work = cv2.resize(source_crop, None, fx=SCALE, fy=SCALE, interpolation=cv2.INTER_CUBIC)
+    scaled_limit = cv2.resize(limit_crop, None, fx=SCALE, fy=SCALE, interpolation=cv2.INTER_NEAREST)
+    mask = np.full(scaled_limit.shape, cv2.GC_BGD, np.uint8)
+    mask[scaled_limit > 0] = cv2.GC_PR_FGD
+    draw_local_strokes(mask, spec.get("strokes", []), cv2.GC_FGD, (x0, y0))
+    draw_local_strokes(mask, spec.get("background_strokes", []), cv2.GC_BGD, (x0, y0))
+
+    background_model = np.zeros((1, 65), np.float64)
+    foreground_model = np.zeros((1, 65), np.float64)
+    cv2.grabCut(work, mask, None, background_model, foreground_model, 10, cv2.GC_INIT_WITH_MASK)
+    binary = np.where((mask == cv2.GC_FGD) | (mask == cv2.GC_PR_FGD), 255, 0).astype(np.uint8)
+    binary[scaled_limit == 0] = 0
+    binary = cv2.morphologyEx(binary, cv2.MORPH_CLOSE, np.ones((3, 3), np.uint8))
+    alpha_crop = cv2.resize(binary, (source_crop.shape[1], source_crop.shape[0]), interpolation=cv2.INTER_AREA)
+    alpha_crop = np.minimum(alpha_crop, limit_crop)
+
+    luminance = cv2.cvtColor(source_crop, cv2.COLOR_BGR2GRAY).astype(np.float32)
+    confidence = np.clip((luminance - 14) / 18, 0, 1)
+    alpha_crop = np.clip(alpha_crop.astype(np.float32) * confidence, 0, 255)
+    # Keep uncertain edge pixels faint, but make every confirmed foreground pixel
+    # unmistakably selected without expanding the mask into the black background.
+    strong = alpha_crop >= 64
+    alpha_crop[strong] = 160 + (alpha_crop[strong] - 64) * (95 / 191)
+    alpha_crop = alpha_crop.astype(np.uint8)
+
+    alpha = np.zeros((height, width), np.uint8)
+    alpha[y0:y1, x0:x1] = alpha_crop
+    return alpha
 
 
 def build_mask(image, spec):
     if spec.get("manual"):
-        return build_manual_mask(image, spec)
+        return build_guided_mask(image, spec)
 
     height, width = image.shape[:2]
     work = cv2.resize(image, (width * SCALE, height * SCALE), interpolation=cv2.INTER_CUBIC)

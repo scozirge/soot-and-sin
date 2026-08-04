@@ -79,6 +79,7 @@ function readHitStats(part) {
   let baseLumaSquared = 0;
   let resultLumaSquared = 0;
   let lumaProducts = 0;
+  let lowLuminanceStrongPixels = 0;
   for (let pixel = 0; pixel < layer.width * layer.height; pixel += 1) {
     const offset = pixel * 4;
     const alphaByte = mask.data[offset];
@@ -93,6 +94,7 @@ function readHitStats(part) {
     deltas.push(delta);
     const baseLuma = base.data[offset] * .2126 + base.data[offset + 1] * .7152
       + base.data[offset + 2] * .0722;
+    if (baseLuma < 16) lowLuminanceStrongPixels += 1;
     const resultLuma = result[0] * .2126 + result[1] * .7152 + result[2] * .0722;
     count += 1;
     baseLumaSum += baseLuma;
@@ -110,6 +112,7 @@ function readHitStats(part) {
     meanColorDelta: deltas.reduce((sum, value) => sum + value, 0) / deltas.length,
     p10ColorDelta: deltas[Math.floor(deltas.length * .1)],
     textureCorrelation: covariance / Math.sqrt(baseVariance * resultVariance),
+    lowLuminanceStrongPixels,
   };
 }
 
@@ -180,10 +183,10 @@ function readHitStats(part) {
   const alphaStats = ["right_hand", "left_hand", "legs"].map(readDamageStats);
   const hitStats = ["head", "right_hand", "left_hand", "legs"].map(readHitStats);
   const anatomyBounds = {
-    head: { minX: 425, minY: 270, maxX: 635, maxY: 470 },
-    right_hand: { minX: 252, minY: 145, maxX: 375, maxY: 270 },
-    left_hand: { minX: 585, minY: 607, maxX: 750, maxY: 748 },
-    legs: { minX: 448, minY: 1312, maxX: 570, maxY: 1505 },
+    head: { minX: 440, minY: 278, maxX: 628, maxY: 456 },
+    right_hand: { minX: 260, minY: 150, maxX: 363, maxY: 260 },
+    left_hand: { minX: 590, minY: 615, maxX: 740, maxY: 740 },
+    legs: { minX: 474, minY: 1324, maxX: 562, maxY: 1497 },
   };
   const maskImages = Object.fromEntries(["head", "right_hand", "left_hand", "legs"].map((part) => [
     part,
@@ -196,27 +199,33 @@ function readHitStats(part) {
     return image.data[(y * image.width + x) * 4];
   };
   const forbiddenHitPixels = {
-    head: [[470, 250], [535, 490], [465, 500], [615, 395]],
-    right_hand: [[250, 282], [340, 250], [340, 270], [336, 230]],
-    left_hand: [[650, 605], [670, 610], [700, 610], [755, 740]],
-    legs: [[520, 1510], [500, 1520], [550, 1520], [480, 1510]],
+    head: [[470, 250], [535, 490], [465, 500], [615, 395], [435, 305], [440, 340], [630, 310]],
+    right_hand: [[250, 282], [340, 250], [340, 270], [336, 230], [260, 190], [362, 180]],
+    left_hand: [[650, 605], [670, 610], [700, 610], [755, 740], [650, 610], [745, 700]],
+    legs: [[520, 1510], [500, 1520], [550, 1520], [480, 1510], [470, 1480], [565, 1470]],
   };
   const requiredHitPixels = {
-    head: [[535, 300], [500, 365], [530, 445], [438, 310], [625, 315]],
+    head: [[535, 300], [520, 365], [530, 430], [455, 335], [616, 335]],
     right_hand: [[315, 180], [300, 220], [280, 245]],
-    left_hand: [[650, 625], [680, 660], [600, 705], [710, 710], [735, 690]],
-    legs: [[520, 1350], [520, 1400], [480, 1485], [530, 1490]],
+    left_hand: [[610, 700], [656, 674], [690, 655], [720, 700]],
+    legs: [[515, 1350], [515, 1400], [490, 1475], [525, 1480]],
   };
   const hitZonePixelChecks = await page.evaluate(({ forbidden, required }) => {
     const contains = (part, [x, y]) => {
       const zone = document.querySelector(`#partGrid .hit-zone[data-part="${part}"]`);
       return zone.isPointInFill(new DOMPoint(x, y));
     };
+    const forbiddenResults = Object.fromEntries(Object.entries(forbidden).map(([part, points]) => [
+      part, points.map((point) => ({ point, inside: contains(part, point) })),
+    ]));
+    const requiredResults = Object.fromEntries(Object.entries(required).map(([part, points]) => [
+      part, points.map((point) => ({ point, inside: contains(part, point) })),
+    ]));
     return {
-      forbidden: Object.entries(forbidden).every(([part, points]) =>
-        points.every((point) => !contains(part, point))),
-      required: Object.entries(required).every(([part, points]) =>
-        points.every((point) => contains(part, point))),
+      forbidden: Object.values(forbiddenResults).flat().every((result) => !result.inside),
+      required: Object.values(requiredResults).flat().every((result) => result.inside),
+      forbiddenResults,
+      requiredResults,
     };
   }, { forbidden: forbiddenHitPixels, required: requiredHitPixels });
   assert(setup.isPainPriestEncounter && setup.encounterName === "苦痛祭司", "劇本節點沒有載入苦痛祭司遭遇");
@@ -265,6 +274,8 @@ function readHitStats(part) {
   assert(hitStats.every((layer) => layer.meanColorDelta >= 55
     && layer.p10ColorDelta >= 35 && layer.textureCorrelation >= .8),
   "選取色在暗背景中必須明顯可辨，且需保留原部位明暗與材質");
+  assert(hitStats.every((layer) => layer.lowLuminanceStrongPixels === 0),
+  "高亮遮罩仍把原圖中不可辨識的暗背景像素染亮，造成輪廓外凸塊");
   assert(Object.entries(forbiddenHitPixels).every(([part, points]) =>
     points.every(([x, y]) => hitAlphaAt(part, x, y) === 0)),
   "頭髮／頸部、刀身、袖口或腳下陰影仍被誤算進高亮遮罩");
