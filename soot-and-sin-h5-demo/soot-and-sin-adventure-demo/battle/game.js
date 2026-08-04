@@ -4,8 +4,12 @@ const PLAYER_MAX_HEALTH = 72;
 const ALLY_MAX_HEALTH = 64;
 const adventureSession = AdventureState.load();
 const storyNode = AdventureState.currentNode(adventureSession);
+const requestedEncounter = new URLSearchParams(location.search).get("encounter");
 const isPainPriestEncounter = Boolean(
-  adventureSession.chapterStoryCombat && storyNode?.id === "pain_priest",
+  requestedEncounter === "pain-priest"
+  || (requestedEncounter !== "demon"
+    && !adventureSession.chapterSearchCombat
+    && storyNode?.id === "pain_priest"),
 );
 const encounter = isPainPriestEncounter
   ? {

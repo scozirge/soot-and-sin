@@ -15,7 +15,13 @@ const assert = (condition, message) => {
   const page = await browser.newPage({ viewport: { width: 1600, height: 1050 } });
   const errors = [];
   page.on("pageerror", (error) => errors.push(error.message));
-  await page.goto(pathToFileURL(path.resolve(__dirname, "../battle/index.html")).href);
+  await page.goto(`${pathToFileURL(path.resolve(__dirname, "../battle/index.html")).href}?encounter=demon`);
+  const demonEncounter = await page.evaluate(() => ({
+    painPriest: isPainPriestEncounter,
+    name: encounter.name,
+  }));
+  assert(!demonEncounter.painPriest && demonEncounter.name === "惡魔",
+    "惡魔回歸測試沒有明確選用惡魔遭遇");
 
   const armResult = await page.evaluate(() => {
     resetState();

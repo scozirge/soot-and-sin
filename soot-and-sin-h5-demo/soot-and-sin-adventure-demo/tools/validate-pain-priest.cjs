@@ -121,6 +121,17 @@ function readHitStats(part) {
     headless: true,
     executablePath: "C:/Program Files/Google/Chrome/Application/chrome.exe",
   });
+  const directPage = await browser.newPage({ viewport: { width: 430, height: 932 } });
+  await directPage.goto(pathToFileURL(path.resolve(__dirname, "../battle/index.html")).href);
+  const directEncounter = await directPage.evaluate(() => ({
+    painPriest: isPainPriestEncounter,
+    name: encounter.name,
+    art: elements.monsterFigure.getAttribute("src"),
+  }));
+  assert(directEncounter.painPriest && directEncounter.name === "苦痛祭司"
+    && directEncounter.art.endsWith("assets/pain-priest.png"),
+  "直接開啟戰鬥測試入口時沒有預設載入苦痛祭司");
+  await directPage.close();
   const page = await browser.newPage({ viewport: { width: 1600, height: 1050 } });
   const errors = [];
   page.on("pageerror", (error) => errors.push(error.message));
