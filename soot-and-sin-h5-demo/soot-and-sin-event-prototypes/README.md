@@ -3,6 +3,7 @@
 每個資料夾都能直接開啟測試：
 
 - `chapter-selection/index.html`：定案的電報案卷章節選擇介面。
+- `system-design-checklist/index.html`：讀取正式待設計文件，可保存勾選、備註與匯出／匯入進度。
 - `battle-event/index.html`：戰鬥事件。
 - `search-event/index.html`：場景搜索事件。
 - `search-animation/index.html`：搜索幻燈片演出。

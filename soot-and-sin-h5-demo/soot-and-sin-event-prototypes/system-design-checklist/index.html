@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#080b09">
+  <title>煤灰與惡｜待設計系統清單</title>
+  <link rel="icon" href="./favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <div class="page-shell">
+    <header class="masthead">
+      <div class="masthead-topline">
+        <span>SOOT AND SIN · DESIGN LEDGER</span>
+        <a href="../../">返回測試入口</a>
+      </div>
+
+      <div class="masthead-copy">
+        <div>
+          <p class="eyebrow">ROYAL DEVELOPMENT ARCHIVE · 01</p>
+          <h1>待設計系統清單</h1>
+          <p class="lede">清單會直接讀取正式 Markdown 文件；勾選與備註保存在目前瀏覽器。</p>
+        </div>
+
+        <section class="overall-progress" aria-labelledby="overall-title">
+          <span id="overall-title">整體進度</span>
+          <strong id="progressPercent">0%</strong>
+          <div class="progress-track" role="progressbar" aria-label="整體完成進度" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+            <span id="progressBar"></span>
+          </div>
+          <small><b id="completedCount">0</b> / <b id="totalCount">0</b> 項完成</small>
+        </section>
+      </div>
+    </header>
+
+    <section class="priority-summary" aria-label="各階段進度">
+      <article data-summary="P0"><span>P0</span><strong>載入中</strong><small>垂直切片前</small></article>
+      <article data-summary="P1"><span>P1</span><strong>載入中</strong><small>切片測試中</small></article>
+      <article data-summary="P2"><span>P2</span><strong>載入中</strong><small>切片成立後</small></article>
+    </section>
+
+    <section class="toolbar" aria-label="清單工具">
+      <div class="filters" role="group" aria-label="篩選清單">
+        <button type="button" class="is-active" data-filter="all">全部</button>
+        <button type="button" data-filter="pending">未完成</button>
+        <button type="button" data-filter="done">已完成</button>
+      </div>
+
+      <div class="file-actions">
+        <a class="tool-link" id="sourceLink" href="../../soot-and-sin-adventure-demo/SYSTEM_DESIGN_BACKLOG.md">檢視原始文件</a>
+        <button type="button" id="exportButton">匯出進度</button>
+        <label class="import-button" for="importInput">匯入進度</label>
+        <input id="importInput" type="file" accept="application/json,.json" hidden>
+      </div>
+    </section>
+
+    <div class="storage-note">
+      <span aria-hidden="true">◆</span>
+      <p>進度只存在這台裝置的這個瀏覽器。更換裝置或清除網站資料前，請先匯出 JSON 備份。</p>
+      <time id="savedAt">尚未儲存</time>
+    </div>
+
+    <main id="checklist" class="checklist" aria-live="polite">
+      <div class="loading-state">
+        <span></span>
+        <p>正在抄錄待設計檔案……</p>
+      </div>
+    </main>
+
+    <div id="emptyState" class="empty-state" hidden>
+      <strong>這個篩選條件下沒有項目</strong>
+      <span>換一個狀態繼續查看。</span>
+    </div>
+
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  </div>
+
+  <template id="priorityTemplate">
+    <section class="priority-block">
+      <header class="priority-heading">
+        <div><span class="priority-code"></span><h2></h2></div>
+        <small class="priority-count"></small>
+      </header>
+      <div class="topic-list"></div>
+    </section>
+  </template>
+
+  <template id="topicTemplate">
+    <section class="topic-block">
+      <button type="button" class="topic-heading" aria-expanded="true">
+        <span class="topic-index"></span>
+        <strong></strong>
+        <small class="topic-progress"></small>
+        <i aria-hidden="true"></i>
+      </button>
+      <div class="task-list"></div>
+    </section>
+  </template>
+
+  <template id="taskTemplate">
+    <article class="task-row">
+      <label class="task-check">
+        <input type="checkbox">
+        <span class="check-mark" aria-hidden="true"></span>
+        <strong class="task-text"></strong>
+      </label>
+      <details class="task-notes">
+        <summary>備註</summary>
+        <label>
+          <span class="sr-only">設計備註</span>
+          <textarea rows="3" maxlength="1200" placeholder="記錄決定、問題或下一步……"></textarea>
+        </label>
+      </details>
+    </article>
+  </template>
+
+  <script src="./app.js" defer></script>
+</body>
+</html>
