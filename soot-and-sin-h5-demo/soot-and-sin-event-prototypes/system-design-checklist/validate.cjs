@@ -6,7 +6,9 @@ const path = require("path");
 const siteRoot = path.resolve(__dirname, "../..");
 const backlogPath = path.join(siteRoot, "soot-and-sin-adventure-demo", "SYSTEM_DESIGN_BACKLOG.md");
 const previewDir = path.join(__dirname, "previews");
-const expectedTasks = (fs.readFileSync(backlogPath, "utf8").match(/^- \[[ xX]\] /gm) || []).length;
+const backlogMarkdown = fs.readFileSync(backlogPath, "utf8");
+const expectedTasks = (backlogMarkdown.match(/^- \[[ xX]\] /gm) || []).length;
+const expectedSourceDone = (backlogMarkdown.match(/^- \[[xX]\] /gm) || []).length;
 const contentTypes = {
   ".css": "text/css; charset=utf-8",
   ".html": "text/html; charset=utf-8",
@@ -76,21 +78,26 @@ function assert(condition, message) {
     await page.screenshot({ path: path.join(previewDir, "preview-desktop.png") });
 
     console.log("[checklist] 驗證勾選、備註與重新整理");
-    const firstTask = page.locator(".task-row").first();
-    const firstCheckbox = firstTask.locator("input[type='checkbox']");
-    await firstTask.locator(".task-check").click();
-    assert(await firstCheckbox.isChecked(), "點擊清單列沒有勾選項目");
-    await firstTask.locator("summary").click();
-    await firstTask.locator("textarea").fill("驗證備註保存");
+    const initialDone = await page.locator(".task-row input[type='checkbox']:checked").count();
+    assert(initialDone === expectedSourceDone, `預設完成數量錯誤：${initialDone}/${expectedSourceDone}`);
+    const testCandidate = page.locator(".task-row input[type='checkbox']:not(:checked)").first();
+    const testTaskId = await testCandidate.evaluate((checkbox) => checkbox.closest(".task-row").dataset.taskId);
+    const testTask = page.locator(`[data-task-id="${testTaskId}"]`);
+    const testCheckbox = testTask.locator("input[type='checkbox']");
+    await testCheckbox.check({ force: true });
+    assert(await testCheckbox.isChecked(), "點擊清單列沒有勾選項目");
+    await testTask.locator("summary").click();
+    await testTask.locator("textarea").fill("驗證備註保存");
     await page.reload({ waitUntil: "networkidle" });
-    assert(await page.locator(".task-row input[type='checkbox']").first().isChecked(), "勾選狀態未保存");
-    assert(await page.locator(".task-row textarea").first().inputValue() === "驗證備註保存", "備註未保存");
+    const savedTask = page.locator(`[data-task-id="${testTaskId}"]`);
+    assert(await savedTask.locator("input[type='checkbox']").isChecked(), "勾選狀態未保存");
+    assert(await savedTask.locator("textarea").inputValue() === "驗證備註保存", "備註未保存");
 
     console.log("[checklist] 驗證篩選");
     await page.locator('[data-filter="pending"]').click();
-    assert(await page.locator(".task-row").first().isHidden(), "未完成篩選沒有隱藏已完成項目");
+    assert(await savedTask.isHidden(), "未完成篩選沒有隱藏已完成項目");
     await page.locator('[data-filter="done"]').click();
-    assert(await page.locator(".task-row:not([hidden])").count() === 1, "已完成篩選數量錯誤");
+    assert(await page.locator(".task-row:not([hidden])").count() === initialDone + 1, "已完成篩選數量錯誤");
 
     console.log("[checklist] 驗證 JSON 匯出與匯入");
     await page.locator("#exportButton").click();
@@ -102,7 +109,8 @@ function assert(condition, message) {
       version: 1,
       items: {},
     };
-    const secondId = await page.locator(".task-row").nth(1).getAttribute("data-task-id");
+    const importCandidate = page.locator(".task-row input[type='checkbox']:not(:checked)").first();
+    const secondId = await importCandidate.evaluate((checkbox) => checkbox.closest(".task-row").dataset.taskId);
     importPayload.items[secondId] = { done: true, note: "匯入成功" };
     await page.locator("#importInput").setInputFiles({
       name: "progress.json",
@@ -117,8 +125,9 @@ function assert(condition, message) {
       [secondId, "匯入成功"],
     );
     await page.locator('[data-filter="all"]').click();
-    assert(await page.locator(".task-row input[type='checkbox']").nth(1).isChecked(), "匯入沒有合併勾選狀態");
-    assert(await page.locator(".task-row textarea").nth(1).inputValue() === "匯入成功", "匯入沒有合併備註");
+    const importedTask = page.locator(`[data-task-id="${secondId}"]`);
+    assert(await importedTask.locator("input[type='checkbox']").isChecked(), "匯入沒有合併勾選狀態");
+    assert(await importedTask.locator("textarea").inputValue() === "匯入成功", "匯入沒有合併備註");
 
     console.log("[checklist] 驗證手機版");
     await page.setViewportSize({ width: 390, height: 844 });
@@ -129,7 +138,7 @@ function assert(condition, message) {
     await page.screenshot({ path: path.join(previewDir, "preview-mobile.png") });
     assert(errors.length === 0, `頁面錯誤：${errors.join(" | ")}`);
 
-    console.log(JSON.stringify({ expectedTasks, taskCount, errors, mobileOverflow: overflow }, null, 2));
+    console.log(JSON.stringify({ expectedTasks, taskCount, expectedSourceDone, errors, mobileOverflow: overflow }, null, 2));
   } finally {
     console.log("[checklist] 關閉測試環境");
     await browser.close();

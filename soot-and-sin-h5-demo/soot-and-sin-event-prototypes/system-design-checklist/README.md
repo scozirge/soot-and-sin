@@ -1,6 +1,6 @@
-# 待設計系統清單 H5
+# 必做設計清單 H5
 
-公開頁面會讀取 [`../../soot-and-sin-adventure-demo/SYSTEM_DESIGN_BACKLOG.md`](../../soot-and-sin-adventure-demo/SYSTEM_DESIGN_BACKLOG.md) 中的 P0、P1、P2 大方向勾選項目，不另外維護第二份清單內容。清單不收錄畫面、演出、單一事件或細部數值工作。
+公開頁面會讀取 [`../../soot-and-sin-adventure-demo/SYSTEM_DESIGN_BACKLOG.md`](../../soot-and-sin-adventure-demo/SYSTEM_DESIGN_BACKLOG.md) 中的必做項目，不另外維護第二份清單內容。清單只拆分使用者已明確提出的設計，不主動增加未確認的系統。
 
 - 勾選完成狀態與個別備註儲存在瀏覽器 `localStorage`。
 - 提供全部／未完成／已完成篩選及各階段進度。

@@ -6,7 +6,7 @@
 
 每章初始只開放第一小節，其餘小節完全依線索與關鍵劇本條件解鎖，不按照章內序號。小節「已解鎖」只代表可以進入，不等於已完成；後續小節取得的線索可能反過來開啟先前小節的新關鍵劇本。介面只以「尚未完成」標示仍有關鍵劇本的小節，不顯示數量、百分比或正確解鎖順序。
 
-章節、小節、線索解鎖與死亡重置的完整規格見 [`CHAPTER_SYSTEM_PLAN.md`](CHAPTER_SYSTEM_PLAN.md)；貨幣與道具分類見 [`ECONOMY_AND_ITEM_SYSTEM.md`](ECONOMY_AND_ITEM_SYSTEM.md)；尚未定案的大方向問題見 [`SYSTEM_DESIGN_BACKLOG.md`](SYSTEM_DESIGN_BACKLOG.md)；神祇、死亡回歸、主角選擇與「未完成聖徒陳列室」章節美術方向見 [`WORLDVIEW_AND_CHAPTER_ART_DIRECTION.md`](WORLDVIEW_AND_CHAPTER_ART_DIRECTION.md)。
+章節、小節、線索解鎖與死亡重置的完整規格見 [`CHAPTER_SYSTEM_PLAN.md`](CHAPTER_SYSTEM_PLAN.md)；貨幣與道具分類見 [`ECONOMY_AND_ITEM_SYSTEM.md`](ECONOMY_AND_ITEM_SYSTEM.md)；已確認必做的設計項目見 [`SYSTEM_DESIGN_BACKLOG.md`](SYSTEM_DESIGN_BACKLOG.md)；神祇、死亡回歸、主角選擇與「未完成聖徒陳列室」章節美術方向見 [`WORLDVIEW_AND_CHAPTER_ART_DIRECTION.md`](WORLDVIEW_AND_CHAPTER_ART_DIRECTION.md)。
 
 正式首發內容只設定一名可玩主角。NPC 或同行者可以參與事件與戰鬥，但不會搶奪物資、加入戰利品分配或與玩家交易；所有取得物都由玩家自己的背包處理。新的可玩主角只會在後續版本另行製作。
 

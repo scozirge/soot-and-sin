@@ -1,9 +1,9 @@
 const BACKLOG_URL = "../../soot-and-sin-adventure-demo/SYSTEM_DESIGN_BACKLOG.md";
 const STORAGE_KEY = "soot-and-sin:system-design-checklist:v1";
 const PRIORITY_LABELS = {
-  P0: "垂直切片製作前必須定案",
-  P1: "在垂直切片中測試後定案",
-  P2: "垂直切片成立後再規劃",
+  P0: "角色、貨幣與道具",
+  P1: "章節、小節與事件",
+  P2: "戰鬥、劇本與神祇",
 };
 
 const dom = {
