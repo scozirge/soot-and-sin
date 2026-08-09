@@ -425,6 +425,10 @@ h1 {
   opacity: .58;
 }
 
+.task-row.is-done.is-design-open {
+  opacity: 1;
+}
+
 .task-row[hidden] {
   display: none;
 }
@@ -486,10 +490,16 @@ h1 {
   text-decoration-color: #a5b1aa;
 }
 
+.task-design,
 .task-notes {
   margin: 8px 0 0 34px;
 }
 
+.task-design + .task-notes {
+  margin-top: 6px;
+}
+
+.task-design summary,
 .task-notes summary {
   width: fit-content;
   color: var(--muted);
@@ -498,8 +508,19 @@ h1 {
   list-style: none;
 }
 
+.task-design summary::-webkit-details-marker,
 .task-notes summary::-webkit-details-marker {
   display: none;
+}
+
+.task-design summary::before {
+  content: "◇ ";
+  color: var(--silver);
+}
+
+.task-design[open] summary::before {
+  content: "◆ ";
+  color: var(--gold);
 }
 
 .task-notes summary::before {
@@ -513,6 +534,22 @@ h1 {
 
 .task-notes.has-note summary::after {
   content: " · 已記錄";
+  color: var(--gold);
+}
+
+.design-list {
+  display: grid;
+  gap: 7px;
+  margin: 10px 0 2px;
+  padding: 12px 15px 12px 31px;
+  color: #c8ccbf;
+  border-left: 1px solid var(--gold-soft);
+  background: #090d0aaa;
+  font-size: .76rem;
+  line-height: 1.65;
+}
+
+.design-list li::marker {
   color: var(--gold);
 }
 

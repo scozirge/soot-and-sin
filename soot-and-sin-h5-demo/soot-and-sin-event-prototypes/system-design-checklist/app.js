@@ -82,6 +82,7 @@ function parseBacklog(markdown) {
   const priorities = [];
   let priority = null;
   let topic = null;
+  let currentTask = null;
 
   markdown.split(/\r?\n/).forEach((rawLine) => {
     const line = rawLine.trim();
@@ -91,6 +92,7 @@ function parseBacklog(markdown) {
       priority = { code, title: priorityMatch[2].trim(), topics: [] };
       priorities.push(priority);
       topic = null;
+      currentTask = null;
       return;
     }
 
@@ -103,25 +105,37 @@ function parseBacklog(markdown) {
         tasks: [],
       };
       priority.topics.push(topic);
+      currentTask = null;
       return;
     }
 
     const taskMatch = line.match(/^-\s+\[([ xX])\]\s+(.+)$/);
-    if (!taskMatch || !priority) return;
+    if (taskMatch && priority) {
+      if (!topic) {
+        topic = { index: "", title: "其他待辦", tasks: [] };
+        priority.topics.push(topic);
+      }
 
-    if (!topic) {
-      topic = { index: "", title: "其他待辦", tasks: [] };
-      priority.topics.push(topic);
+      const text = taskMatch[2].trim();
+      currentTask = {
+        id: stableId(`${priority.code}|${topic.title}|${text}`),
+        text,
+        design: [],
+        sourceDone: taskMatch[1].toLowerCase() === "x",
+        priority: priority.code,
+        topic: topic.title,
+      };
+      topic.tasks.push(currentTask);
+      return;
     }
 
-    const text = taskMatch[2].trim();
-    topic.tasks.push({
-      id: stableId(`${priority.code}|${topic.title}|${text}`),
-      text,
-      sourceDone: taskMatch[1].toLowerCase() === "x",
-      priority: priority.code,
-      topic: topic.title,
-    });
+    const designMatch = rawLine.match(/^\s{2,}-\s+(.+)$/);
+    if (designMatch && currentTask) {
+      currentTask.design.push(designMatch[1].trim());
+      return;
+    }
+
+    if (line) currentTask = null;
   });
 
   return priorities.filter((entry) => entry.topics.some((entryTopic) => entryTopic.tasks.length));
@@ -186,6 +200,8 @@ function render() {
         const row = taskFragment.querySelector(".task-row");
         const checkbox = taskFragment.querySelector("input[type='checkbox']");
         const text = taskFragment.querySelector(".task-text");
+        const designDetails = taskFragment.querySelector(".task-design");
+        const designList = taskFragment.querySelector(".design-list");
         const details = taskFragment.querySelector(".task-notes");
         const textarea = taskFragment.querySelector("textarea");
         const itemState = getItemState(task);
@@ -199,6 +215,18 @@ function render() {
         textarea.setAttribute("aria-label", `${task.text}的設計備註`);
         row.classList.toggle("is-done", itemState.done);
         details.classList.toggle("has-note", Boolean(itemState.note.trim()));
+
+        if (task.design.length) {
+          designDetails.hidden = false;
+          task.design.forEach((entry) => {
+            const item = document.createElement("li");
+            item.textContent = entry;
+            designList.append(item);
+          });
+          designDetails.addEventListener("toggle", () => {
+            row.classList.toggle("is-design-open", designDetails.open);
+          });
+        }
 
         checkbox.addEventListener("change", () => {
           setItemState(task, { done: checkbox.checked });

@@ -74,8 +74,17 @@ function assert(condition, message) {
     assert(taskCount === expectedTasks, `待辦數量錯誤：${taskCount}/${expectedTasks}`);
     assert(await page.locator(".priority-block").count() === 3, "未建立 P0、P1、P2 三個階段");
     assert(await page.locator("text=載入失敗").count() === 0, "Markdown 載入失敗");
+    const designDetails = page.locator(".task-design:not([hidden])");
+    assert(await designDetails.count() === expectedSourceDone, "已完成項目沒有完整載入設計摘要");
     fs.mkdirSync(previewDir, { recursive: true });
     await page.screenshot({ path: path.join(previewDir, "preview-desktop.png") });
+
+    console.log("[checklist] 驗證已完成項目的設計摘要");
+    const firstDesign = designDetails.first();
+    await firstDesign.locator("summary").click();
+    assert(await firstDesign.getAttribute("open") !== null, "目前設計無法展開");
+    assert(await firstDesign.locator(".design-list li").count() > 0, "目前設計沒有內容");
+    await page.screenshot({ path: path.join(previewDir, "preview-completed-design.png") });
 
     console.log("[checklist] 驗證勾選、備註與重新整理");
     const initialDone = await page.locator(".task-row input[type='checkbox']:checked").count();
@@ -86,7 +95,7 @@ function assert(condition, message) {
     const testCheckbox = testTask.locator("input[type='checkbox']");
     await testCheckbox.check({ force: true });
     assert(await testCheckbox.isChecked(), "點擊清單列沒有勾選項目");
-    await testTask.locator("summary").click();
+    await testTask.locator(".task-notes > summary").click();
     await testTask.locator("textarea").fill("驗證備註保存");
     await page.reload({ waitUntil: "networkidle" });
     const savedTask = page.locator(`[data-task-id="${testTaskId}"]`);
@@ -132,6 +141,9 @@ function assert(condition, message) {
     console.log("[checklist] 驗證手機版");
     await page.setViewportSize({ width: 390, height: 844 });
     await page.reload({ waitUntil: "networkidle", timeout: 20000 });
+    const mobileDesign = page.locator(".task-design:not([hidden])").first();
+    await mobileDesign.locator("summary").click();
+    assert(await mobileDesign.getAttribute("open") !== null, "手機版目前設計無法展開");
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
     assert(overflow <= 1, `手機版出現水平溢位：${overflow}px`);
     assert(await page.locator("#exportButton").isVisible(), "手機版匯出按鈕不可見");
