@@ -2,7 +2,7 @@
 
 本清單只列出使用者已明確提出、遊戲確定需要的設計項目，不主動增加未提及的系統。每一項代表一份可獨立補完的設計內容；規則已正式記錄者標為完成，只有分類但尚未補齊內容者保留未完成。
 
-正式規格見 [`CHARACTER_ATTRIBUTE_SYSTEM.md`](CHARACTER_ATTRIBUTE_SYSTEM.md)、[`CHAPTER_SYSTEM_PLAN.md`](CHAPTER_SYSTEM_PLAN.md)、[`ECONOMY_AND_ITEM_SYSTEM.md`](ECONOMY_AND_ITEM_SYSTEM.md) 與 [`WORLDVIEW_AND_CHAPTER_ART_DIRECTION.md`](WORLDVIEW_AND_CHAPTER_ART_DIRECTION.md)。
+正式規格見 [`CHARACTER_LUCIA_AVERY.md`](CHARACTER_LUCIA_AVERY.md)、[`CHARACTER_ATTRIBUTE_SYSTEM.md`](CHARACTER_ATTRIBUTE_SYSTEM.md)、[`CHAPTER_SYSTEM_PLAN.md`](CHAPTER_SYSTEM_PLAN.md)、[`ECONOMY_AND_ITEM_SYSTEM.md`](ECONOMY_AND_ITEM_SYSTEM.md) 與 [`WORLDVIEW_AND_CHAPTER_ART_DIRECTION.md`](WORLDVIEW_AND_CHAPTER_ART_DIRECTION.md)。
 
 ## P0：角色、貨幣與道具
 
@@ -11,11 +11,15 @@
 - [x] 主角基本設定：露西亞的身分、背景、個性與初始道具。
   - 主角為露西亞・艾弗里，是古老皇室後代與少數受過高等教育的知識分子，現為胡桃木生存組織的小家庭成員。
   - 個性沉穩、聰明、善於學習，具有探索未知與追求知識的慾望；態度正向並具領導魅力與強韌精神。
+  - 學習以外的時間，她會跟隨另一名胡桃木成員前往車站搜索可用物資。
+  - 附屬性為體力 4、力量 4、搜查 7、魅力 8。
+  - 主要屬性為生命 70、背包格 34、肉搏傷害加成 +20%、非銀幣商品交易費用折扣 24%、說服成功率 24%。
   - 初始道具為油燈、學院制服、寶石吊墜、水壺、切肉刀與麵包。
 - [x] 屬性設計：主要屬性與附屬性的分類及用途。
-  - 主要屬性為生命與背包格；生命歸零時角色死亡，背包格決定可放置道具的格數。
-  - 體力影響生命與背包格大小；力量影響物理攻擊武器傷害。
-  - 搜查影響搜尋物資的結果；魅力影響交易費用與對話說服成功率。
+  - 主要屬性為生命、背包格、肉搏傷害加成、非銀幣商品交易費用折扣與說服成功率。
+  - 生命基礎值為 50，每點體力增加 5；背包格基礎值為 30，每點體力增加 1。
+  - 每點力量增加 5% 肉搏武器傷害；每點魅力降低 3% 非銀幣商品交易費用，並提供 3% 說服成功率。
+  - 搜查影響搜尋物資，但實際換算規則仍待規劃。
 - [ ] 技能設計：露西亞可以使用或取得的角色技能。
 
 ### 2. 貨幣設計
