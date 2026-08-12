@@ -2,18 +2,20 @@
 
 本清單只列出使用者已明確提出、遊戲確定需要的設計項目，不主動增加未提及的系統。每一項代表一份可獨立補完的設計內容；規則已正式記錄者標為完成，只有分類但尚未補齊內容者保留未完成。
 
-正式規格見 [`CHAPTER_SYSTEM_PLAN.md`](CHAPTER_SYSTEM_PLAN.md)、[`ECONOMY_AND_ITEM_SYSTEM.md`](ECONOMY_AND_ITEM_SYSTEM.md) 與 [`WORLDVIEW_AND_CHAPTER_ART_DIRECTION.md`](WORLDVIEW_AND_CHAPTER_ART_DIRECTION.md)。
+正式規格見 [`CHARACTER_ATTRIBUTE_SYSTEM.md`](CHARACTER_ATTRIBUTE_SYSTEM.md)、[`CHAPTER_SYSTEM_PLAN.md`](CHAPTER_SYSTEM_PLAN.md)、[`ECONOMY_AND_ITEM_SYSTEM.md`](ECONOMY_AND_ITEM_SYSTEM.md) 與 [`WORLDVIEW_AND_CHAPTER_ART_DIRECTION.md`](WORLDVIEW_AND_CHAPTER_ART_DIRECTION.md)。
 
 ## P0：角色、貨幣與道具
 
 ### 1. 角色設計
 
-- [x] 主角基本設定：露西亞的身分、背景、個性、初始數值與初始道具。
+- [x] 主角基本設定：露西亞的身分、背景、個性與初始道具。
   - 主角為露西亞・艾弗里，是古老皇室後代與少數受過高等教育的知識分子，現為胡桃木生存組織的小家庭成員。
   - 個性沉穩、聰明、善於學習，具有探索未知與追求知識的慾望；態度正向並具領導魅力與強韌精神。
-  - 初始數值為生命 70、心智 160、力量 3、魅力 6、智慧 8。
   - 初始道具為油燈、學院制服、寶石吊墜、水壺、切肉刀與麵包。
-- [ ] 屬性設計：生命、心智、力量、魅力與智慧各自的用途和影響。
+- [x] 屬性設計：主要屬性與附屬性的分類及用途。
+  - 主要屬性為生命與背包格；生命歸零時角色死亡，背包格決定可放置道具的格數。
+  - 體力影響生命與背包格大小；力量影響物理攻擊武器傷害。
+  - 搜查影響搜尋物資的結果；魅力影響交易費用與對話說服成功率。
 - [ ] 技能設計：露西亞可以使用或取得的角色技能。
 
 ### 2. 貨幣設計
