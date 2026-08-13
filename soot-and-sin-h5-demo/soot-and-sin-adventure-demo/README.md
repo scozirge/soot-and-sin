@@ -6,7 +6,7 @@
 
 每章初始只開放第一小節，其餘小節完全依線索與關鍵劇本條件解鎖，不按照章內序號。小節「已解鎖」只代表可以進入，不等於已完成；後續小節取得的線索可能反過來開啟先前小節的新關鍵劇本。介面只以「尚未完成」標示仍有關鍵劇本的小節，不顯示數量、百分比或正確解鎖順序。
 
-露西亞的完整角色資料見 [`CHARACTER_LUCIA_AVERY.md`](CHARACTER_LUCIA_AVERY.md)；角色主要屬性、附屬性與換算公式見 [`CHARACTER_ATTRIBUTE_SYSTEM.md`](CHARACTER_ATTRIBUTE_SYSTEM.md)；章節、小節、線索解鎖與死亡重置的完整規格見 [`CHAPTER_SYSTEM_PLAN.md`](CHAPTER_SYSTEM_PLAN.md)；貨幣與道具分類見 [`ECONOMY_AND_ITEM_SYSTEM.md`](ECONOMY_AND_ITEM_SYSTEM.md)；已確認必做的設計項目見 [`SYSTEM_DESIGN_BACKLOG.md`](SYSTEM_DESIGN_BACKLOG.md)；神祇、死亡回歸、主角選擇與「未完成聖徒陳列室」章節美術方向見 [`WORLDVIEW_AND_CHAPTER_ART_DIRECTION.md`](WORLDVIEW_AND_CHAPTER_ART_DIRECTION.md)。
+露西亞的完整角色資料見 [`CHARACTER_LUCIA_AVERY.md`](CHARACTER_LUCIA_AVERY.md)；角色主要屬性、附屬性與換算公式見 [`CHARACTER_ATTRIBUTE_SYSTEM.md`](CHARACTER_ATTRIBUTE_SYSTEM.md)；章節、小節、線索解鎖與死亡重置的完整規格見 [`CHAPTER_SYSTEM_PLAN.md`](CHAPTER_SYSTEM_PLAN.md)；戰鬥、休息與搜查規則見 [`COMBAT_REST_SEARCH_RULES.md`](COMBAT_REST_SEARCH_RULES.md)；貨幣與道具分類見 [`ECONOMY_AND_ITEM_SYSTEM.md`](ECONOMY_AND_ITEM_SYSTEM.md)；已確認必做的設計項目見 [`SYSTEM_DESIGN_BACKLOG.md`](SYSTEM_DESIGN_BACKLOG.md)；神祇、死亡回歸、主角選擇與「未完成聖徒陳列室」章節美術方向見 [`WORLDVIEW_AND_CHAPTER_ART_DIRECTION.md`](WORLDVIEW_AND_CHAPTER_ART_DIRECTION.md)。
 
 正式首發內容只設定一名可玩主角。NPC 或同行者可以參與事件與戰鬥，但不會搶奪物資、加入戰利品分配或與玩家交易；所有取得物都由玩家自己的背包處理。新的可玩主角只會在後續版本另行製作。
 
@@ -19,7 +19,7 @@
 - 同種物品不會自動堆疊；拖曳到相同道具上放開才會合併數量。
 - 正式節點路線不預告下一點是劇本、休息或戰鬥，事件類型抵達時才揭露；目前原型畫面可能仍保留舊分類顯示。
 - 劇本事件採場景文字、具體選項、條件選項與結果回饋；第一個重要劇本為「苦痛祭司」。
-- 安全區目前以 5 秒投票選擇休息或搜索；休息恢復最大生命的 10%，原型計時 30 秒，全員結束即可提前離開。
+- 安全區目前仍保留舊多人原型的 5 秒投票、恢復最大生命 10% 與 30 秒休息；正式規則已改為純休息 10 秒、可立即結束，後續實作時應以正式規格為準。
 - 食物只能在安全區使用，醫療用品在安全區與戰鬥都能使用。
 - 搜索物資分成武器、食物與醫療用品；武器與醫療用品會加入戰鬥行動列。
 - 每次搜索成功後都會再次投票；深入層數越高，遇到怪物與高威脅怪物的機率越高，同時高級物資機率也會提高。

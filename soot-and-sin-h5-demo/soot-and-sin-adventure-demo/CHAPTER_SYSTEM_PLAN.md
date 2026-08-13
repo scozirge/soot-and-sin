@@ -4,7 +4,7 @@
 
 本文件只記錄章節系統的固定規則、資料邊界與驗收條件，不收錄具體章名、場景、NPC 台詞、BOSS 數值或介面美術稿。
 
-世界觀與章節美術方向另見 [`WORLDVIEW_AND_CHAPTER_ART_DIRECTION.md`](WORLDVIEW_AND_CHAPTER_ART_DIRECTION.md)；貨幣與道具分類另見 [`ECONOMY_AND_ITEM_SYSTEM.md`](ECONOMY_AND_ITEM_SYSTEM.md)；各章劇情內容應放在獨立的章節資料或劇本文件中。
+世界觀與章節美術方向另見 [`WORLDVIEW_AND_CHAPTER_ART_DIRECTION.md`](WORLDVIEW_AND_CHAPTER_ART_DIRECTION.md)；貨幣與道具分類另見 [`ECONOMY_AND_ITEM_SYSTEM.md`](ECONOMY_AND_ITEM_SYSTEM.md)；戰鬥、休息與搜查共通規則另見 [`COMBAT_REST_SEARCH_RULES.md`](COMBAT_REST_SEARCH_RULES.md)；各章劇情內容應放在獨立的章節資料或劇本文件中。
 
 ## 2. 核心結構
 
@@ -79,6 +79,7 @@ BOSS 計入四個戰鬥事件，不額外增加事件點。路線在進入小節
 | 休息事件中的搜查 | 30 秒 |
 
 - 進入小節後不能撤退，必須完成 13 個事件點或因主角死亡而結束。
+- 純休息以 10 秒為目標上限，不強迫玩家等待；完成操作後可以立即結束。
 - 完成第 13 個事件點後結算本次小節，主角保留目前章的背包道具，本次取得的銀幣加入全遊戲共用的永久資產。
 - 銀幣不占背包空間且死亡後不會失去；銅幣與其他精品仍是會占用背包的章內道具。
 - 依事件本體估算，一次非 BOSS 小節約需 10–13 分鐘；移動、閱讀停頓、背包整理與額外演出不計入此估算。
