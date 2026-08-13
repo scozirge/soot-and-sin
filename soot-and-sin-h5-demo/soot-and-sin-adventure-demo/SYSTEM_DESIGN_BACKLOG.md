@@ -2,7 +2,7 @@
 
 本清單只列出使用者已明確提出、遊戲確定需要的設計項目，不主動增加未提及的系統。每一項代表一份可獨立補完的設計內容；規則已正式記錄者標為完成，只有分類但尚未補齊內容者保留未完成。
 
-正式規格見 [`CHARACTER_LUCIA_AVERY.md`](CHARACTER_LUCIA_AVERY.md)、[`CHARACTER_ATTRIBUTE_SYSTEM.md`](CHARACTER_ATTRIBUTE_SYSTEM.md)、[`CHAPTER_SYSTEM_PLAN.md`](CHAPTER_SYSTEM_PLAN.md)、[`COMBAT_REST_SEARCH_RULES.md`](COMBAT_REST_SEARCH_RULES.md)、[`ECONOMY_AND_ITEM_SYSTEM.md`](ECONOMY_AND_ITEM_SYSTEM.md) 與 [`WORLDVIEW_AND_CHAPTER_ART_DIRECTION.md`](WORLDVIEW_AND_CHAPTER_ART_DIRECTION.md)。
+正式規格見 [`CHARACTER_LUCIA_AVERY.md`](CHARACTER_LUCIA_AVERY.md)、[`CHARACTER_ATTRIBUTE_SYSTEM.md`](CHARACTER_ATTRIBUTE_SYSTEM.md)、[`TALENT_SYSTEM.md`](TALENT_SYSTEM.md)、[`CHAPTER_SYSTEM_PLAN.md`](CHAPTER_SYSTEM_PLAN.md)、[`COMBAT_REST_SEARCH_RULES.md`](COMBAT_REST_SEARCH_RULES.md)、[`ECONOMY_AND_ITEM_SYSTEM.md`](ECONOMY_AND_ITEM_SYSTEM.md) 與 [`WORLDVIEW_AND_CHAPTER_ART_DIRECTION.md`](WORLDVIEW_AND_CHAPTER_ART_DIRECTION.md)。
 
 ## P0：角色、貨幣與道具
 
@@ -21,6 +21,13 @@
   - 每點力量增加 5% 肉搏武器傷害；每點魅力降低 3% 非銀幣商品交易費用，並提供 3% 說服成功率。
   - 搜查影響搜尋物資，但實際換算規則仍待規劃。
 - [ ] 技能設計：露西亞可以使用或取得的角色技能。
+- [x] 天賦系統規則：永久能力、角色初始專屬天賦，以及遊玩取得的額外天賦。
+  - 天賦獲得後不會因角色死亡、章節背包重置或進入新章而失去。
+  - 每名角色具有初始專屬天賦；其他額外天賦必須在遊玩過程中取得。
+- [x] 露西亞初始專屬天賦「魅力」：強化說服，並在安全區取得夥伴補給。
+  - 說服成功率額外增加 5 個百分點；配合魅力屬性的 24%，起始總值為 29%。
+  - 進入安全區事件時，夥伴會提供 1 件食物或醫療用品。
+- [ ] 額外天賦設計：遊玩中可取得的天賦內容與取得條件。
 
 ### 2. 貨幣設計
 
@@ -45,13 +52,15 @@
 
 ### 3. 道具設計
 
-- [x] 道具分類規則：精品、食物、武器、防具、飾品、特殊道具，以及可附加於任何道具的關鍵道具標記。
-  - 食物只能在休息事件中使用；實際恢復對象與數值待規劃。武器留在背包並可於戰鬥中任意選用。
+- [x] 道具分類規則：精品、食物、醫療用品、武器、防具、飾品、特殊道具，以及可附加於任何道具的關鍵道具標記。
+  - 食物只能在休息事件中使用；醫療用品同為恢復型消耗品，但可以在戰鬥中使用。兩者的具體效果仍待規劃。
+  - 武器留在背包並可於戰鬥中任意選用。
   - 防具同時只能穿一件，多餘防具仍占背包；飾品留在背包中提供被動效果。
   - 特殊道具沒有一般使用功能，只負責觸發劇本效果。
   - 關鍵道具是附加標記，任何類型道具都可能成為關鍵道具，且不能主動丟棄或販售。
 - [ ] 精品設計：銅幣、銅製品、寶石、吊飾及其他精品清單。
 - [ ] 食物設計：各種食物、可恢復的角色狀態與恢復數值。
+- [ ] 醫療用品設計：可在戰鬥中使用的醫療用品清單與恢復數值。
 - [ ] 武器設計：放在背包並可於戰鬥中選用的武器清單與效果。
 - [ ] 防具設計：同時只能穿一件的防具清單與效果。
 - [ ] 飾品設計：放在背包中即可生效的飾品清單與被動效果。
@@ -134,7 +143,7 @@
 - [x] 戰鬥道具規則：使用次數、醫療用品與食物限制。
   - 有使用次數的武器或道具在行動完成後消耗一次，歸零後從行動列移除。
   - 食物只能在休息事件使用，不會出現在戰鬥行動列。
-  - 目前戰鬥原型允許醫療用品在戰鬥中恢復生命；醫療用品是否成為正式獨立分類仍待確認。
+  - 醫療用品是正式的恢復型道具分類，可以在戰鬥中使用。
 - [x] 怪物部位破壞規則：部位門檻、停用、行動限制與即死部位。
   - 每個部位可設定命中率、傷害倍率、破壞門檻與破壞效果；已破壞部位不能再次選取。
   - 依賴已破壞部位的怪物行動會被取消或從行動池移除。
