@@ -91,7 +91,7 @@ jobs:
 
       - name: Version Godot Web runtime files
         run: |
-          BUILD_ID="${GITHUB_SHA:0:12}"
+          BUILD_ID="$GITHUB_SHA"
           GAME_DIRECTORY="$GITHUB_WORKSPACE/_site/game"
           VERSIONED_BASENAME="game-${BUILD_ID}"
           mv "$GAME_DIRECTORY/index.js" "$GAME_DIRECTORY/${VERSIONED_BASENAME}.js"
