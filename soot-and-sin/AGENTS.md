@@ -46,6 +46,8 @@
 ## H5 初始載入
 
 - Web 分兩階段：HTML 殼層顯示引擎／Core 下載進度，Godot 啟動場景顯示簽章、Logic Pack 與 Content Pack 進度。
+- 每次 Pages 部署都必須讓 Godot Web 的 JS、WASM 與 Core PCK 使用該次提交的版本化檔名，避免 HTML 與執行檔被瀏覽器或 CDN 混用不同版本快取。
+- HTML 載入殼必須顯示實際百分比；下載長時間沒有任何進展時提供重新進入，但不得因慢速連線自動中止仍在進行的下載。
 - 玩家介面只顯示符合世界觀的短句與進度，不顯示 API、PCK、hash 或內部錯誤；詳細錯誤只寫入開發者主控台。
 - Web 不使用專屬遊戲規則或獨立存檔格式；正式功能必須同時能在 Windows／Steam 執行。
 - Godot Web 不依賴系統字型；正式 UI 使用 Core 內的 Noto Sans TC Theme，保留字型授權文件。

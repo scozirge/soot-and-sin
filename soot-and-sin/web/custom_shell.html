@@ -143,7 +143,8 @@
       cursor: pointer;
     }
 
-    body.load-failed #retry { display: block; }
+    body.load-failed #retry,
+    body.load-stalled #retry { display: block; }
   </style>
 </head>
 <body>
@@ -166,12 +167,20 @@
       const bar = document.querySelector('#load-bar');
       const retry = document.querySelector('#retry');
       const engine = new Engine($GODOT_CONFIG);
+      const STALL_NOTICE_MS = 20000;
+      let lastProgressAt = Date.now();
+      let gameStarted = false;
 
       const setProgress = (current, total) => {
+        lastProgressAt = Date.now();
+        document.body.classList.remove('load-stalled');
         if (total > 0) {
           const ratio = Math.max(0.03, Math.min(1, current / total));
           bar.style.width = `${Math.round(ratio * 100)}%`;
-          status.textContent = ratio < .7 ? '正在穿過煤霧……' : '正在翻開旅途紀錄……';
+          const percent = Math.round(ratio * 100);
+          status.textContent = ratio < .7
+            ? `正在穿過煤霧…… ${percent}%`
+            : `正在翻開旅途紀錄…… ${percent}%`;
         } else {
           bar.style.width = '42%';
         }
@@ -193,6 +202,7 @@
             canvas: document.querySelector('#canvas'),
             onProgress: setProgress,
           });
+          gameStarted = true;
           bar.style.width = '100%';
           document.body.classList.add('game-ready');
           document.querySelector('#canvas').focus();
@@ -201,7 +211,18 @@
         }
       };
 
-      retry.addEventListener('click', () => window.location.reload());
+      window.setInterval(() => {
+        if (gameStarted || document.body.classList.contains('load-failed')) return;
+        if (Date.now() - lastProgressAt < STALL_NOTICE_MS) return;
+        document.body.classList.add('load-stalled');
+        status.textContent = '煤霧暫時沒有散去，可以重新進入。';
+      }, 1000);
+
+      retry.addEventListener('click', () => {
+        const nextUrl = new URL(window.location.href);
+        nextUrl.searchParams.set('retry', Date.now().toString());
+        window.location.replace(nextUrl);
+      });
       start();
     })();
   </script>

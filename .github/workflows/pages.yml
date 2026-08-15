@@ -89,6 +89,28 @@ jobs:
           test -f "$GITHUB_WORKSPACE/_site/game/index.html"
           test -f "$GITHUB_WORKSPACE/_site/game/content/manifest.json"
 
+      - name: Version Godot Web runtime files
+        run: |
+          BUILD_ID="${GITHUB_SHA:0:12}"
+          GAME_DIRECTORY="$GITHUB_WORKSPACE/_site/game"
+          VERSIONED_BASENAME="game-${BUILD_ID}"
+          mv "$GAME_DIRECTORY/index.js" "$GAME_DIRECTORY/${VERSIONED_BASENAME}.js"
+          mv "$GAME_DIRECTORY/index.wasm" "$GAME_DIRECTORY/${VERSIONED_BASENAME}.wasm"
+          mv "$GAME_DIRECTORY/index.pck" "$GAME_DIRECTORY/${VERSIONED_BASENAME}.pck"
+          sed -i \
+            -e "s/src=\"index\.js\"/src=\"${VERSIONED_BASENAME}.js\"/" \
+            -e "s/\"executable\":\"index\"/\"executable\":\"${VERSIONED_BASENAME}\"/" \
+            -e "s/\"index\.wasm\"/\"${VERSIONED_BASENAME}.wasm\"/" \
+            -e "s/\"index\.pck\"/\"${VERSIONED_BASENAME}.pck\"/" \
+            "$GAME_DIRECTORY/index.html"
+          test -f "$GAME_DIRECTORY/${VERSIONED_BASENAME}.js"
+          test -f "$GAME_DIRECTORY/${VERSIONED_BASENAME}.wasm"
+          test -f "$GAME_DIRECTORY/${VERSIONED_BASENAME}.pck"
+          grep -q "src=\"${VERSIONED_BASENAME}.js\"" "$GAME_DIRECTORY/index.html"
+          grep -q "\"executable\":\"${VERSIONED_BASENAME}\"" "$GAME_DIRECTORY/index.html"
+          grep -q "\"${VERSIONED_BASENAME}.wasm\"" "$GAME_DIRECTORY/index.html"
+          grep -q "\"${VERSIONED_BASENAME}.pck\"" "$GAME_DIRECTORY/index.html"
+
       - name: Add static prototypes
         run: |
           cp -a soot-and-sin-h5-demo/. "$GITHUB_WORKSPACE/_site/"
