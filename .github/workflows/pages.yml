@@ -40,6 +40,10 @@ jobs:
           apt-get update -qq
           apt-get install -qqy libfontconfig1
 
+      - name: Import Godot resources
+        run: |
+          godot --headless --path soot-and-sin --editor --quit
+
       - name: Validate bundle contract
         run: |
           godot --headless --path soot-and-sin --script res://tools/validate_bundle_contract.gd
