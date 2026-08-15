@@ -59,7 +59,10 @@ func download(url: String, destination: String) -> Dictionary:
 func _request(url: String, download_path := "") -> Dictionary:
 	var request := HTTPRequest.new()
 	request.timeout = AppConfig.HTTP_TIMEOUT_SECONDS
-	request.accept_gzip = download_path.is_empty()
+	# Browsers transparently decode compressed responses before Godot receives
+	# them. Enabling HTTPRequest gzip handling on Web would decode the already
+	# decoded body again and fail before the manifest can be parsed.
+	request.accept_gzip = download_path.is_empty() and not OS.has_feature("web")
 	request.download_file = download_path
 	_host.add_child(request)
 
