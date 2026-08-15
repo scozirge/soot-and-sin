@@ -1,6 +1,32 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene load_steps=7 format=3]
 
 [ext_resource type="Script" path="res://src/bootstrap/bootstrap.gd" id="1_bootstrap"]
+[ext_resource type="Theme" path="res://src/ui/base_theme.tres" id="2_theme"]
+[ext_resource type="Script" path="res://src/ui/ambient_backdrop.gd" id="3_backdrop"]
+
+[sub_resource type="StyleBoxFlat" id="ProgressBackground"]
+bg_color = Color(0.012, 0.016, 0.014, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.31, 0.27, 0.19, 1)
+
+[sub_resource type="StyleBoxFlat" id="ProgressFill"]
+bg_color = Color(0.7, 0.53, 0.28, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.88, 0.72, 0.45, 1)
+
+[sub_resource type="StyleBoxFlat" id="RetryStyle"]
+bg_color = Color(0.045, 0.055, 0.047, 0.92)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.66, 0.5, 0.27, 1)
 
 [node name="Bootstrap" type="Control"]
 layout_mode = 3
@@ -9,62 +35,174 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+theme = ExtResource("2_theme")
 script = ExtResource("1_bootstrap")
 
-[node name="Background" type="ColorRect" parent="."]
+[node name="GameRoot" type="Control" parent="."]
+unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(0.035, 0.04, 0.05, 1)
 
-[node name="Margin" type="MarginContainer" parent="."]
+[node name="LoadingOverlay" type="Control" parent="."]
+unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_constants/margin_left = 48
-theme_override_constants/margin_top = 48
-theme_override_constants/margin_right = 48
-theme_override_constants/margin_bottom = 48
+mouse_filter = 0
 
-[node name="Center" type="CenterContainer" parent="Margin"]
-layout_mode = 2
+[node name="Backdrop" type="Control" parent="LoadingOverlay"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("3_backdrop")
+variant = "loading"
 
-[node name="Content" type="VBoxContainer" parent="Margin/Center"]
-custom_minimum_size = Vector2(560, 0)
-layout_mode = 2
-theme_override_constants/separation = 14
+[node name="Registry" type="Label" parent="LoadingOverlay"]
+layout_mode = 1
+anchors_preset = 0
+offset_left = 44.0
+offset_top = 38.0
+offset_right = 360.0
+offset_bottom = 64.0
+theme_override_colors/font_color = Color(0.35, 0.34, 0.29, 1)
+theme_override_font_sizes/font_size = 11
+text = "ROYAL ARCHIVE  ·  REGISTER 1887"
 
-[node name="Title" type="Label" parent="Margin/Center/Content"]
+[node name="LogoCenter" type="CenterContainer" parent="LoadingOverlay"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -540.0
+offset_top = -296.0
+offset_right = 540.0
+offset_bottom = 30.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Logo" type="VBoxContainer" parent="LoadingOverlay/LogoCenter"]
+custom_minimum_size = Vector2(900, 0)
 layout_mode = 2
-theme_override_colors/font_color = Color(0.9, 0.82, 0.62, 1)
-theme_override_font_sizes/font_size = 36
-text = "Soot and Sin"
+theme_override_constants/separation = 8
+
+[node name="Eyebrow" type="Label" parent="LoadingOverlay/LogoCenter/Logo"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.67, 0.52, 0.29, 1)
+theme_override_font_sizes/font_size = 13
+text = "A CHRONICLE OF ASH, BLOOD AND FAITH"
 horizontal_alignment = 1
 
-[node name="Subtitle" type="Label" parent="Margin/Center/Content"]
+[node name="Title" type="Label" parent="LoadingOverlay/LogoCenter/Logo"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.62, 0.66, 0.68, 1)
-theme_override_font_sizes/font_size = 16
-text = "Core bootstrap"
+theme_override_colors/font_color = Color(0.91, 0.86, 0.73, 1)
+theme_override_font_sizes/font_size = 68
+text = "煤灰與惡"
 horizontal_alignment = 1
 
-[node name="StatusLabel" type="Label" parent="Margin/Center/Content"]
+[node name="Ornament" type="Label" parent="LoadingOverlay/LogoCenter/Logo"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.58, 0.45, 0.25, 0.9)
+theme_override_font_sizes/font_size = 17
+text = "◇  ─────────  ◇"
+horizontal_alignment = 1
+
+[node name="Subtitle" type="Label" parent="LoadingOverlay/LogoCenter/Logo"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.39, 0.4, 0.36, 1)
+theme_override_font_sizes/font_size = 14
+text = "SOOT AND SIN"
+horizontal_alignment = 1
+
+[node name="ProgressCenter" type="CenterContainer" parent="LoadingOverlay"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -420.0
+offset_top = 118.0
+offset_right = 420.0
+offset_bottom = 290.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ProgressVBox" type="VBoxContainer" parent="LoadingOverlay/ProgressCenter"]
+custom_minimum_size = Vector2(680, 0)
+layout_mode = 2
+theme_override_constants/separation = 11
+
+[node name="StatusLabel" type="Label" parent="LoadingOverlay/ProgressCenter/ProgressVBox"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_colors/font_color = Color(0.82, 0.84, 0.82, 1)
-text = "Starting…"
+theme_override_colors/font_color = Color(0.63, 0.62, 0.56, 1)
+theme_override_font_sizes/font_size = 16
+text = "正在點亮油燈……"
 horizontal_alignment = 1
 autowrap_mode = 2
 
-[node name="VersionLabel" type="Label" parent="Margin/Center/Content"]
-unique_name_in_owner = true
+[node name="ProgressRow" type="HBoxContainer" parent="LoadingOverlay/ProgressCenter/ProgressVBox"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.4, 0.44, 0.45, 1)
+theme_override_constants/separation = 16
+
+[node name="ProgressBar" type="ProgressBar" parent="LoadingOverlay/ProgressCenter/ProgressVBox/ProgressRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 8)
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+theme_override_styles/background = SubResource("ProgressBackground")
+theme_override_styles/fill = SubResource("ProgressFill")
+show_percentage = false
+
+[node name="PercentLabel" type="Label" parent="LoadingOverlay/ProgressCenter/ProgressVBox/ProgressRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(54, 20)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.58, 0.47, 0.28, 1)
 theme_override_font_sizes/font_size = 12
-horizontal_alignment = 1
+text = "00%"
+horizontal_alignment = 2
+[node name="RetryButton" type="Button" parent="LoadingOverlay/ProgressCenter/ProgressVBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 48)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.83, 0.78, 0.67, 1)
+theme_override_font_sizes/font_size = 16
+theme_override_styles/normal = SubResource("RetryStyle")
+theme_override_styles/hover = SubResource("RetryStyle")
+theme_override_styles/pressed = SubResource("RetryStyle")
+text = "重新尋路"
+visible = false
+
+[node name="VersionLabel" type="Label" parent="LoadingOverlay"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -380.0
+offset_top = -62.0
+offset_right = -42.0
+offset_bottom = -38.0
+grow_horizontal = 0
+grow_vertical = 0
+theme_override_colors/font_color = Color(0.26, 0.28, 0.25, 1)
+theme_override_font_sizes/font_size = 11
+horizontal_alignment = 2

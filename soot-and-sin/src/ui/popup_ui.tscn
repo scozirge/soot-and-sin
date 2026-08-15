@@ -1,0 +1,232 @@
+[gd_scene load_steps=7 format=3]
+
+[ext_resource type="Script" path="res://src/ui/popup_ui.gd" id="1_popup"]
+
+[sub_resource type="StyleBoxFlat" id="StylePanel"]
+bg_color = Color(0.043, 0.055, 0.047, 0.985)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.63, 0.48, 0.25, 0.9)
+corner_radius_top_left = 2
+corner_radius_top_right = 2
+corner_radius_bottom_right = 2
+corner_radius_bottom_left = 2
+shadow_color = Color(0, 0, 0, 0.7)
+shadow_size = 28
+
+[sub_resource type="StyleBoxFlat" id="StyleButton"]
+bg_color = Color(0.075, 0.087, 0.076, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.42, 0.37, 0.27, 1)
+corner_radius_top_left = 1
+corner_radius_top_right = 1
+corner_radius_bottom_right = 1
+corner_radius_bottom_left = 1
+
+[sub_resource type="StyleBoxFlat" id="StyleButtonHover"]
+bg_color = Color(0.12, 0.12, 0.09, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.77, 0.59, 0.31, 1)
+corner_radius_top_left = 1
+corner_radius_top_right = 1
+corner_radius_bottom_right = 1
+corner_radius_bottom_left = 1
+
+[sub_resource type="StyleBoxFlat" id="StyleConfirm"]
+bg_color = Color(0.63, 0.48, 0.25, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.9, 0.76, 0.48, 1)
+corner_radius_top_left = 1
+corner_radius_top_right = 1
+corner_radius_bottom_right = 1
+corner_radius_bottom_left = 1
+
+[sub_resource type="StyleBoxFlat" id="StyleConfirmHover"]
+bg_color = Color(0.76, 0.59, 0.31, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.97, 0.84, 0.6, 1)
+corner_radius_top_left = 1
+corner_radius_top_right = 1
+corner_radius_bottom_right = 1
+corner_radius_bottom_left = 1
+
+[node name="PopupUI" type="Control"]
+unique_name_in_owner = true
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 1
+script = ExtResource("1_popup")
+
+[node name="PopupRoot" type="Control" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Dimmer" type="Button" parent="PopupRoot"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+focus_mode = 0
+mouse_default_cursor_shape = 2
+theme_override_styles/normal = null
+theme_override_styles/hover = null
+theme_override_styles/pressed = null
+theme_override_styles/focus = null
+flat = true
+modulate = Color(0.015, 0.02, 0.017, 0.84)
+
+[node name="Center" type="CenterContainer" parent="PopupRoot"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 1
+
+[node name="Panel" type="PanelContainer" parent="PopupRoot/Center"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(720, 390)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StylePanel")
+
+[node name="OuterMargin" type="MarginContainer" parent="PopupRoot/Center/Panel"]
+layout_mode = 2
+theme_override_constants/margin_left = 44
+theme_override_constants/margin_top = 34
+theme_override_constants/margin_right = 44
+theme_override_constants/margin_bottom = 34
+
+[node name="VBox" type="VBoxContainer" parent="PopupRoot/Center/Panel/OuterMargin"]
+layout_mode = 2
+theme_override_constants/separation = 18
+
+[node name="Eyebrow" type="Label" parent="PopupRoot/Center/Panel/OuterMargin/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.67, 0.52, 0.29, 1)
+theme_override_font_sizes/font_size = 12
+text = "TELEGRAPH  ·  PRIVATE NOTICE"
+horizontal_alignment = 1
+
+[node name="PopupTitle" type="Label" parent="PopupRoot/Center/Panel/OuterMargin/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.91, 0.86, 0.73, 1)
+theme_override_font_sizes/font_size = 31
+text = "系統訊息"
+horizontal_alignment = 1
+
+[node name="Rule" type="HSeparator" parent="PopupRoot/Center/Panel/OuterMargin/VBox"]
+layout_mode = 2
+
+[node name="PopupContent" type="Label" parent="PopupRoot/Center/Panel/OuterMargin/VBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 142)
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_colors/font_color = Color(0.74, 0.73, 0.67, 1)
+theme_override_font_sizes/font_size = 20
+text = "訊息內容"
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 2
+
+[node name="Buttons" type="HBoxContainer" parent="PopupRoot/Center/Panel/OuterMargin/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 16
+alignment = 1
+
+[node name="CancelButton" type="Button" parent="PopupRoot/Center/Panel/OuterMargin/VBox/Buttons"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(220, 58)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.78, 0.77, 0.71, 1)
+theme_override_font_sizes/font_size = 18
+theme_override_styles/normal = SubResource("StyleButton")
+theme_override_styles/hover = SubResource("StyleButtonHover")
+theme_override_styles/pressed = SubResource("StyleButtonHover")
+text = "取消"
+
+[node name="ConfirmButton" type="Button" parent="PopupRoot/Center/Panel/OuterMargin/VBox/Buttons"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(220, 58)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.08, 0.075, 0.055, 1)
+theme_override_colors/font_hover_color = Color(0.03, 0.028, 0.02, 1)
+theme_override_font_sizes/font_size = 18
+theme_override_styles/normal = SubResource("StyleConfirm")
+theme_override_styles/hover = SubResource("StyleConfirmHover")
+theme_override_styles/pressed = SubResource("StyleConfirmHover")
+text = "確認"
+
+[node name="LoadingRoot" type="Control" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="LoadingBlocker" type="Button" parent="LoadingRoot"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+focus_mode = 0
+theme_override_styles/normal = null
+theme_override_styles/hover = null
+theme_override_styles/pressed = null
+theme_override_styles/focus = null
+flat = true
+modulate = Color(0.01, 0.014, 0.012, 0.76)
+
+[node name="LoadingLabel" type="Label" parent="LoadingRoot"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -330.0
+offset_top = -34.0
+offset_right = 330.0
+offset_bottom = 34.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.9, 0.82, 0.62, 1)
+theme_override_font_sizes/font_size = 22
+text = "正在處理……"
+horizontal_alignment = 1
+vertical_alignment = 1

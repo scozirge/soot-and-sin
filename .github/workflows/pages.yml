@@ -1,10 +1,16 @@
-name: Deploy H5 demos
+name: Build and deploy H5
 
 on:
   push:
     branches:
       - master
   workflow_dispatch:
+
+env:
+  GODOT_VERSION: 4.7.1
+  LOGIC_VERSION: 0.1.0
+  CONTENT_VERSION: 0.1.0
+  UPDATE_KEY_ID: development
 
 permissions:
   contents: read
@@ -16,23 +22,85 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  build:
+    runs-on: ubuntu-24.04
+    container:
+      image: barichello/godot-ci:4.7.1
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Configure Godot export templates
+        run: |
+          mkdir -p ~/.local/share/godot/export_templates/
+          mv "/root/.local/share/godot/export_templates/${GODOT_VERSION}.stable" ~/.local/share/godot/export_templates/
+
+      - name: Install headless font support
+        run: |
+          apt-get update -qq
+          apt-get install -qqy libfontconfig1
+
+      - name: Validate bundle contract
+        run: |
+          godot --headless --path soot-and-sin --script res://tools/validate_bundle_contract.gd
+
+      - name: Build signed startup bundles and manifest
+        run: |
+          mkdir -p "$GITHUB_WORKSPACE/_site/game/content"
+          LOGIC_FILE="gameplay-logic-${LOGIC_VERSION}.pck"
+          CONTENT_FILE="base-content-${CONTENT_VERSION}.pck"
+          LOGIC_PATH="$GITHUB_WORKSPACE/_site/game/content/$LOGIC_FILE"
+          CONTENT_PATH="$GITHUB_WORKSPACE/_site/game/content/$CONTENT_FILE"
+          MANIFEST_PATH="$GITHUB_WORKSPACE/_site/game/content/manifest.json"
+          godot --headless --path soot-and-sin --script res://tools/build_logic_pack.gd -- \
+            "--output=$LOGIC_PATH"
+          godot --headless --path soot-and-sin --script res://tools/build_content_pack.gd -- \
+            "--output=$CONTENT_PATH"
+          godot --headless --path soot-and-sin --script res://tools/build_bundle_manifest.gd -- \
+            "--logic-pack=$LOGIC_PATH" \
+            "--logic-file=$LOGIC_FILE" \
+            "--logic-version=$LOGIC_VERSION" \
+            "--content-pack=$CONTENT_PATH" \
+            "--content-file=$CONTENT_FILE" \
+            "--output=$MANIFEST_PATH" \
+            "--entry-scene=res://logic/gameplay/main_shell.tscn" \
+            "--content-version=$CONTENT_VERSION" \
+            "--private-key=$GITHUB_WORKSPACE/soot-and-sin/tools/fixtures/development_update.key" \
+            "--key-id=$UPDATE_KEY_ID"
+          godot --headless --path soot-and-sin --script res://tools/validate_bundle_contract.gd -- \
+            "--release-manifest=$MANIFEST_PATH"
+
+      - name: Verify startup candidate without local logic sources
+        run: |
+          CANDIDATE_CORE="$RUNNER_TEMP/soot-and-sin-candidate-core"
+          cp -a soot-and-sin "$CANDIDATE_CORE"
+          rm -rf "$CANDIDATE_CORE/logic"
+          godot --headless --path "$CANDIDATE_CORE" \
+            --script res://tools/validate_startup_candidate.gd -- \
+            "--release-manifest=$GITHUB_WORKSPACE/_site/game/content/manifest.json"
+
+      - name: Export Godot Web build
+        run: |
+          godot --headless --path soot-and-sin --export-release "Web" "$GITHUB_WORKSPACE/_site/game/index.html"
+          test -f "$GITHUB_WORKSPACE/_site/game/index.html"
+          test -f "$GITHUB_WORKSPACE/_site/game/content/manifest.json"
+
+      - name: Add static prototypes
+        run: |
+          cp -a soot-and-sin-h5-demo/. "$GITHUB_WORKSPACE/_site/"
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: _site
+
   deploy:
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
+    needs: build
     steps:
-      - name: Checkout
-        uses: actions/checkout@v7
-
-      - name: Configure Pages
-        uses: actions/configure-pages@v6
-
-      - name: Upload H5 demos
-        uses: actions/upload-pages-artifact@v5
-        with:
-          path: soot-and-sin-h5-demo
-
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v5

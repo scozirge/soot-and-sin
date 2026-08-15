@@ -1,0 +1,516 @@
+[gd_scene load_steps=15 format=3]
+
+[ext_resource type="Script" path="res://src/ui/ambient_backdrop.gd" id="1_backdrop"]
+[ext_resource type="PackedScene" path="res://src/ui/popup_ui.tscn" id="2_popup"]
+
+[sub_resource type="StyleBoxFlat" id="StyleHeader"]
+bg_color = Color(0.035, 0.044, 0.038, 0.96)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.29, 0.27, 0.2, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleStage"]
+bg_color = Color(0.031, 0.039, 0.034, 0.94)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.43, 0.35, 0.22, 0.88)
+shadow_color = Color(0, 0, 0, 0.42)
+shadow_size = 14
+
+[sub_resource type="StyleBoxFlat" id="StyleVisual"]
+bg_color = Color(0.017, 0.024, 0.02, 0.9)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.29, 0.28, 0.21, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleRail"]
+bg_color = Color(0.044, 0.052, 0.045, 0.97)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.43, 0.35, 0.22, 0.92)
+shadow_color = Color(0, 0, 0, 0.46)
+shadow_size = 14
+
+[sub_resource type="StyleBoxFlat" id="StyleSmallButton"]
+bg_color = Color(0.055, 0.066, 0.057, 0.95)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.28, 0.27, 0.21, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleSmallButtonHover"]
+bg_color = Color(0.105, 0.105, 0.077, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.7, 0.54, 0.29, 1)
+
+[sub_resource type="StyleBoxFlat" id="StylePrimary"]
+bg_color = Color(0.69, 0.53, 0.29, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.92, 0.78, 0.51, 1)
+shadow_color = Color(0, 0, 0, 0.36)
+shadow_size = 8
+
+[sub_resource type="StyleBoxFlat" id="StylePrimaryHover"]
+bg_color = Color(0.82, 0.65, 0.37, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(1, 0.89, 0.67, 1)
+shadow_color = Color(0.69, 0.53, 0.29, 0.18)
+shadow_size = 12
+
+[sub_resource type="StyleBoxFlat" id="StyleStat"]
+bg_color = Color(0.025, 0.032, 0.027, 0.74)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.19, 0.2, 0.17, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleSectionActive"]
+bg_color = Color(0.12, 0.115, 0.082, 0.9)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.72, 0.55, 0.29, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleSectionIdle"]
+bg_color = Color(0.026, 0.034, 0.029, 0.72)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.19, 0.2, 0.17, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleSectionLocked"]
+bg_color = Color(0.016, 0.021, 0.018, 0.68)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.12, 0.13, 0.11, 1)
+
+[node name="GameScreen" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Backdrop" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("1_backdrop")
+variant = "game"
+
+[node name="SafeArea" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 38
+theme_override_constants/margin_top = 30
+theme_override_constants/margin_right = 38
+theme_override_constants/margin_bottom = 26
+
+[node name="Root" type="VBoxContainer" parent="SafeArea"]
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="Header" type="PanelContainer" parent="SafeArea/Root"]
+custom_minimum_size = Vector2(0, 86)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleHeader")
+
+[node name="HeaderMargin" type="MarginContainer" parent="SafeArea/Root/Header"]
+layout_mode = 2
+theme_override_constants/margin_left = 26
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 14
+theme_override_constants/margin_bottom = 12
+
+[node name="HeaderRow" type="HBoxContainer" parent="SafeArea/Root/Header/HeaderMargin"]
+layout_mode = 2
+theme_override_constants/separation = 14
+
+[node name="Brand" type="VBoxContainer" parent="SafeArea/Root/Header/HeaderMargin/HeaderRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 0
+
+[node name="BrandEn" type="Label" parent="SafeArea/Root/Header/HeaderMargin/HeaderRow/Brand"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.68, 0.52, 0.28, 1)
+theme_override_font_sizes/font_size = 11
+text = "SOOT AND SIN  ·  CHAPTER ARCHIVE"
+
+[node name="BrandZh" type="Label" parent="SafeArea/Root/Header/HeaderMargin/HeaderRow/Brand"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.91, 0.86, 0.74, 1)
+theme_override_font_sizes/font_size = 27
+text = "煤灰與惡"
+
+[node name="SilverButton" type="Button" parent="SafeArea/Root/Header/HeaderMargin/HeaderRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(154, 60)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.83, 0.84, 0.8, 1)
+theme_override_font_sizes/font_size = 16
+theme_override_styles/normal = SubResource("StyleSmallButton")
+theme_override_styles/hover = SubResource("StyleSmallButtonHover")
+theme_override_styles/pressed = SubResource("StyleSmallButtonHover")
+text = "◈  銀幣  0"
+
+[node name="ArchiveButton" type="Button" parent="SafeArea/Root/Header/HeaderMargin/HeaderRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(116, 60)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.76, 0.75, 0.69, 1)
+theme_override_font_sizes/font_size = 16
+theme_override_styles/normal = SubResource("StyleSmallButton")
+theme_override_styles/hover = SubResource("StyleSmallButtonHover")
+theme_override_styles/pressed = SubResource("StyleSmallButtonHover")
+text = "章節紀錄"
+
+[node name="SettingsButton" type="Button" parent="SafeArea/Root/Header/HeaderMargin/HeaderRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(84, 60)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.76, 0.75, 0.69, 1)
+theme_override_font_sizes/font_size = 22
+theme_override_styles/normal = SubResource("StyleSmallButton")
+theme_override_styles/hover = SubResource("StyleSmallButtonHover")
+theme_override_styles/pressed = SubResource("StyleSmallButtonHover")
+text = "⚙"
+
+[node name="Body" type="HBoxContainer" parent="SafeArea/Root"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 22
+
+[node name="Stage" type="PanelContainer" parent="SafeArea/Root/Body"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/panel = SubResource("StyleStage")
+
+[node name="StageMargin" type="MarginContainer" parent="SafeArea/Root/Body/Stage"]
+layout_mode = 2
+theme_override_constants/margin_left = 28
+theme_override_constants/margin_top = 24
+theme_override_constants/margin_right = 28
+theme_override_constants/margin_bottom = 24
+
+[node name="StageVBox" type="VBoxContainer" parent="SafeArea/Root/Body/Stage/StageMargin"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="StageHeading" type="HBoxContainer" parent="SafeArea/Root/Body/Stage/StageMargin/StageVBox"]
+layout_mode = 2
+
+[node name="HeadingLeft" type="VBoxContainer" parent="SafeArea/Root/Body/Stage/StageMargin/StageVBox/StageHeading"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 2
+
+[node name="ChapterCode" type="Label" parent="SafeArea/Root/Body/Stage/StageMargin/StageVBox/StageHeading/HeadingLeft"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.68, 0.52, 0.28, 1)
+theme_override_font_sizes/font_size = 12
+text = "CHAPTER · 01"
+
+[node name="ChapterLabel" type="Label" parent="SafeArea/Root/Body/Stage/StageMargin/StageVBox/StageHeading/HeadingLeft"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9, 0.85, 0.72, 1)
+theme_override_font_sizes/font_size = 28
+text = "第一章"
+
+[node name="Character" type="VBoxContainer" parent="SafeArea/Root/Body/Stage/StageMargin/StageVBox/StageHeading"]
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="CharacterCode" type="Label" parent="SafeArea/Root/Body/Stage/StageMargin/StageVBox/StageHeading/Character"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.4, 0.41, 0.37, 1)
+theme_override_font_sizes/font_size = 11
+text = "PROTAGONIST"
+horizontal_alignment = 2
+
+[node name="CharacterName" type="Label" parent="SafeArea/Root/Body/Stage/StageMargin/StageVBox/StageHeading/Character"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.7, 0.7, 0.64, 1)
+theme_override_font_sizes/font_size = 17
+text = "露西亞・艾弗里"
+horizontal_alignment = 2
+
+[node name="Visual" type="PanelContainer" parent="SafeArea/Root/Body/Stage/StageMargin/StageVBox"]
+custom_minimum_size = Vector2(0, 410)
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleVisual")
+
+[node name="VisualCenter" type="CenterContainer" parent="SafeArea/Root/Body/Stage/StageMargin/StageVBox/Visual"]
+layout_mode = 2
+
+[node name="VisualStack" type="VBoxContainer" parent="SafeArea/Root/Body/Stage/StageMargin/StageVBox/Visual/VisualCenter"]
+custom_minimum_size = Vector2(700, 0)
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="Sigil" type="Label" parent="SafeArea/Root/Body/Stage/StageMargin/StageVBox/Visual/VisualCenter/VisualStack"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.55, 0.43, 0.24, 0.82)
+theme_override_font_sizes/font_size = 84
+text = "Ⅰ"
+horizontal_alignment = 1
+
+[node name="LocationCode" type="Label" parent="SafeArea/Root/Body/Stage/StageMargin/StageVBox/Visual/VisualCenter/VisualStack"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.43, 0.43, 0.39, 1)
+theme_override_font_sizes/font_size = 12
+text = "ROUTE 01  ·  18:40  ·  ASH DISTRICT"
+horizontal_alignment = 1
+
+[node name="EntryLabel" type="Label" parent="SafeArea/Root/Body/Stage/StageMargin/StageVBox/Visual/VisualCenter/VisualStack"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.88, 0.82, 0.68, 1)
+theme_override_font_sizes/font_size = 36
+text = "煤灰車站"
+horizontal_alignment = 1
+
+[node name="VisualLine" type="HSeparator" parent="SafeArea/Root/Body/Stage/StageMargin/StageVBox/Visual/VisualCenter/VisualStack"]
+custom_minimum_size = Vector2(0, 12)
+layout_mode = 2
+
+[node name="VisualHint" type="Label" parent="SafeArea/Root/Body/Stage/StageMargin/StageVBox/Visual/VisualCenter/VisualStack"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.44, 0.45, 0.41, 1)
+theme_override_font_sizes/font_size = 15
+text = "煤霧壓在月台上，舊鐵軌仍通往沒人願意提起的地方。"
+horizontal_alignment = 1
+
+[node name="Sections" type="HBoxContainer" parent="SafeArea/Root/Body/Stage/StageMargin/StageVBox"]
+custom_minimum_size = Vector2(0, 78)
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="Profile" type="PanelContainer" parent="SafeArea/Root/Body/Stage/StageMargin/StageVBox/Sections"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/panel = SubResource("StyleSectionIdle")
+
+[node name="ProfileLabel" type="Label" parent="SafeArea/Root/Body/Stage/StageMargin/StageVBox/Sections/Profile"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.48, 0.48, 0.43, 1)
+theme_override_font_sizes/font_size = 13
+text = "序章\n角色檔案"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="SectionOne" type="PanelContainer" parent="SafeArea/Root/Body/Stage/StageMargin/StageVBox/Sections"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/panel = SubResource("StyleSectionActive")
+
+[node name="SectionOneLabel" type="Label" parent="SafeArea/Root/Body/Stage/StageMargin/StageVBox/Sections/SectionOne"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.87, 0.78, 0.58, 1)
+theme_override_font_sizes/font_size = 13
+text = "01\n煤灰車站"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="SectionUnknownA" type="PanelContainer" parent="SafeArea/Root/Body/Stage/StageMargin/StageVBox/Sections"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/panel = SubResource("StyleSectionLocked")
+
+[node name="UnknownALabel" type="Label" parent="SafeArea/Root/Body/Stage/StageMargin/StageVBox/Sections/SectionUnknownA"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.22, 0.24, 0.21, 1)
+theme_override_font_sizes/font_size = 18
+text = "◇"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="SectionUnknownB" type="PanelContainer" parent="SafeArea/Root/Body/Stage/StageMargin/StageVBox/Sections"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/panel = SubResource("StyleSectionLocked")
+
+[node name="UnknownBLabel" type="Label" parent="SafeArea/Root/Body/Stage/StageMargin/StageVBox/Sections/SectionUnknownB"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.22, 0.24, 0.21, 1)
+theme_override_font_sizes/font_size = 18
+text = "◇"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="ControlRail" type="PanelContainer" parent="SafeArea/Root/Body"]
+custom_minimum_size = Vector2(420, 0)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleRail")
+
+[node name="RailMargin" type="MarginContainer" parent="SafeArea/Root/Body/ControlRail"]
+layout_mode = 2
+theme_override_constants/margin_left = 30
+theme_override_constants/margin_top = 28
+theme_override_constants/margin_right = 30
+theme_override_constants/margin_bottom = 28
+
+[node name="RailVBox" type="VBoxContainer" parent="SafeArea/Root/Body/ControlRail/RailMargin"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="RailEyebrow" type="Label" parent="SafeArea/Root/Body/ControlRail/RailMargin/RailVBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.67, 0.52, 0.29, 1)
+theme_override_font_sizes/font_size = 12
+text = "CURRENT ROUTE"
+
+[node name="RailTitle" type="Label" parent="SafeArea/Root/Body/ControlRail/RailMargin/RailVBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.91, 0.86, 0.74, 1)
+theme_override_font_sizes/font_size = 30
+text = "第一節"
+
+[node name="RailSubtitle" type="Label" parent="SafeArea/Root/Body/ControlRail/RailMargin/RailVBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.7, 0.69, 0.63, 1)
+theme_override_font_sizes/font_size = 20
+text = "煤灰車站"
+
+[node name="RailRule" type="HSeparator" parent="SafeArea/Root/Body/ControlRail/RailMargin/RailVBox"]
+custom_minimum_size = Vector2(0, 16)
+layout_mode = 2
+
+[node name="Status" type="HBoxContainer" parent="SafeArea/Root/Body/ControlRail/RailMargin/RailVBox"]
+layout_mode = 2
+
+[node name="StatusLabel" type="Label" parent="SafeArea/Root/Body/ControlRail/RailMargin/RailVBox/Status"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.4, 0.41, 0.37, 1)
+theme_override_font_sizes/font_size = 13
+text = "狀態"
+
+[node name="StatusValue" type="Label" parent="SafeArea/Root/Body/ControlRail/RailMargin/RailVBox/Status"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.75, 0.61, 0.36, 1)
+theme_override_font_sizes/font_size = 14
+text = "可進入"
+
+[node name="Stats" type="HBoxContainer" parent="SafeArea/Root/Body/ControlRail/RailMargin/RailVBox"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="Health" type="PanelContainer" parent="SafeArea/Root/Body/ControlRail/RailMargin/RailVBox/Stats"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/panel = SubResource("StyleStat")
+
+[node name="HealthLabel" type="Label" parent="SafeArea/Root/Body/ControlRail/RailMargin/RailVBox/Stats/Health"]
+custom_minimum_size = Vector2(0, 66)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.62, 0.62, 0.56, 1)
+theme_override_font_sizes/font_size = 13
+text = "生命\n70"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Bag" type="PanelContainer" parent="SafeArea/Root/Body/ControlRail/RailMargin/RailVBox/Stats"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/panel = SubResource("StyleStat")
+
+[node name="BagLabel" type="Label" parent="SafeArea/Root/Body/ControlRail/RailMargin/RailVBox/Stats/Bag"]
+custom_minimum_size = Vector2(0, 66)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.62, 0.62, 0.56, 1)
+theme_override_font_sizes/font_size = 13
+text = "背包\n34"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Route" type="PanelContainer" parent="SafeArea/Root/Body/ControlRail/RailMargin/RailVBox/Stats"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/panel = SubResource("StyleStat")
+
+[node name="RouteLabel" type="Label" parent="SafeArea/Root/Body/ControlRail/RailMargin/RailVBox/Stats/Route"]
+custom_minimum_size = Vector2(0, 66)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.62, 0.62, 0.56, 1)
+theme_override_font_sizes/font_size = 13
+text = "節點\n13"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Description" type="Label" parent="SafeArea/Root/Body/ControlRail/RailMargin/RailVBox"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_colors/font_color = Color(0.48, 0.49, 0.45, 1)
+theme_override_font_sizes/font_size = 16
+text = "舊月台仍有微弱燈火。\n進入後，下一個事件不會預先顯示。"
+vertical_alignment = 1
+autowrap_mode = 2
+
+[node name="EnterButton" type="Button" parent="SafeArea/Root/Body/ControlRail/RailMargin/RailVBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 76)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.075, 0.064, 0.043, 1)
+theme_override_colors/font_hover_color = Color(0.03, 0.026, 0.018, 1)
+theme_override_font_sizes/font_size = 21
+theme_override_styles/normal = SubResource("StylePrimary")
+theme_override_styles/hover = SubResource("StylePrimaryHover")
+theme_override_styles/pressed = SubResource("StylePrimaryHover")
+text = "進入第一節"
+
+[node name="Footer" type="HBoxContainer" parent="SafeArea/Root"]
+custom_minimum_size = Vector2(0, 24)
+layout_mode = 2
+
+[node name="RuntimeLabel" type="Label" parent="SafeArea/Root/Footer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.27, 0.29, 0.26, 1)
+theme_override_font_sizes/font_size = 11
+text = "Core"
+
+[node name="ContentLabel" type="Label" parent="SafeArea/Root/Footer"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.27, 0.29, 0.26, 1)
+theme_override_font_sizes/font_size = 11
+text = "Content"
+horizontal_alignment = 2
+
+[node name="PopupUI" parent="." instance=ExtResource("2_popup")]

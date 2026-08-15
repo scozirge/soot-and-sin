@@ -1,0 +1,8 @@
+{
+  "schema_version": 1,
+  "entry_scene": "res://logic/gameplay/main_shell.tscn",
+  "files": [
+    "res://logic/gameplay/main_shell.gd",
+    "res://logic/gameplay/main_shell.tscn"
+  ]
+}

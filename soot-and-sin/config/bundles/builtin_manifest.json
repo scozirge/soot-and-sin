@@ -1,8 +1,13 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
+  "core_version": "0.1.0-dev",
   "core_api_version": 1,
+  "logic_contract_version": 1,
   "engine_version": "4.7",
+  "update_channel": "development",
+  "logic_version": "builtin",
   "content_version": "builtin",
+  "entry_scene": "",
   "catalog_path": "",
   "bundles": []
 }

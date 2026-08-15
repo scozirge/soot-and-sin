@@ -1,0 +1,7 @@
+{
+  "schema_version": 1,
+  "bundle_id": "base-content",
+  "files": [
+    "res://content/bundles/bootstrap/content_marker.tres"
+  ]
+}
